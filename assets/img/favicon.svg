@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Casabella Aruba">
+  <rect width="64" height="64" fill="#0e0d0b"/>
+  <!-- Placeholder mark: two roof lines, low and tall — the two project types.
+       Replace with the real logo when there is one. -->
+  <g fill="none" stroke="#cfa863" stroke-width="2.4" stroke-linecap="square">
+    <path d="M10 52V34l10-8 10 8v18"/>
+    <path d="M36 52V20l9-7 9 7v32"/>
+    <path d="M6 52h52"/>
+  </g>
+</svg>

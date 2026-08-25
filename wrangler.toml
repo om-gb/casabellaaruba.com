@@ -1,0 +1,5 @@
+# Cloudflare Pages project config.
+# Secrets are NOT set here — see README. Anything in this file is public.
+name = "casabella-aruba"
+compatibility_date = "2026-08-20"
+pages_build_output_dir = "."

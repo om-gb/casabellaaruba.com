@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+
+# Build output — regenerate with tools/build-preview.py
+preview/
+
+# Cloudflare local state and secrets. .dev.vars holds real API keys.
+.wrangler/
+.dev.vars
