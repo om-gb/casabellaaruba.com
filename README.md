@@ -17,6 +17,7 @@ casabellaaruba.com/
 ├── css/styles.css    tokens → reset → primitives → sections
 ├── js/main.js        sticky header, mobile nav, reveal, project filter, form
 ├── assets/img/       hero, project cards, favicon, og-cover
+├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
 ├── functions/api/    enquiry.js — the form handler (Cloudflare Function)
 ├── _headers          cache + security headers
 ├── wrangler.toml     project name + compatibility date
@@ -60,6 +61,13 @@ grep -o '{{[A-Z0-9_]*}}' index.html | sort -u   # should print nothing
 ```
 
 `CONTENT.md` tracks what is still open.
+
+## Tower subpage
+
+The complete Tower sales site lives at `/tower/`, with Spanish at
+`/tower/es/`. Its assets are namespaced under `/tower/assets/`, so they cannot
+collide with company-site imagery. Both company and Tower enquiry forms post to
+the shared Cloudflare Function at `/api/enquiry`.
 
 ## Single-file preview
 

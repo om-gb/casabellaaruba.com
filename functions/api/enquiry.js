@@ -16,7 +16,16 @@
  *                             the domain must be verified with Resend
  */
 
-const LIMITS = { name: 120, email: 200, interest: 40, message: 4000 };
+const LIMITS = {
+  name: 120,
+  email: 200,
+  interest: 40,
+  phone: 80,
+  preferredContact: 80,
+  residence: 120,
+  page: 80,
+  message: 4000
+};
 
 const INTERESTS = {
   tower: "Buying at Casabella Tower",
@@ -55,15 +64,21 @@ export async function onRequestPost({ request, env }) {
 
   // Honeypot. Bots fill every field; humans never see this one. Answer 200 so
   // the bot has no signal to tune against, but send nothing.
-  if (clean(fields["bot-field"], 200)) return json({ ok: true }, 200);
+  if (clean(fields["bot-field"], 200) || clean(fields._gotcha, 200)) {
+    return json({ ok: true }, 200);
+  }
 
   const name = clean(fields.name, LIMITS.name);
   const email = clean(fields.email, LIMITS.email);
   const message = clean(fields.message, LIMITS.message);
   const interest = clean(fields.interest, LIMITS.interest);
+  const phone = clean(fields.phone, LIMITS.phone);
+  const preferredContact = clean(fields.preferredContact, LIMITS.preferredContact);
+  const residence = clean(fields.residence, LIMITS.residence);
+  const page = clean(fields.page, LIMITS.page);
 
-  if (!name || !email || !message) {
-    return json({ ok: false, error: "Please fill in your name, email and message." }, 400);
+  if (!name || !email || (!message && interest !== "tower")) {
+    return json({ ok: false, error: "Please fill in the required fields." }, 400);
   }
 
   // Deliberately loose — the strict grammar rejects valid addresses, and a
@@ -92,8 +107,12 @@ export async function onRequestPost({ request, env }) {
     "Interest: " + (INTERESTS[interest] || interest || "not stated"),
     "Name:     " + name,
     "Email:    " + email,
+    ...(phone ? ["Phone:    " + phone] : []),
+    ...(preferredContact ? ["Preferred contact: " + preferredContact] : []),
+    ...(residence ? ["Residence: " + residence] : []),
+    ...(page ? ["Page:     " + page] : []),
     "",
-    message,
+    message || "No additional message.",
     "",
     "—",
     "Sent from casabellaaruba.com",
