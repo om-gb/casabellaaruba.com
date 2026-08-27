@@ -172,6 +172,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   color: var(--ink-900);
 }
 
+.btn--tower {
+  border-color: var(--brass-500);
+  color: var(--brass-400);
+}
+.btn--tower:hover {
+  background: var(--brass-500);
+  border-color: var(--brass-500);
+  color: var(--ink-900);
+}
+
 /* Unresolved content. Loud on purpose — nothing ships with one of these. */
 .todo {
   display: inline-block;
@@ -245,6 +255,20 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: color 0.3s var(--ease);
 }
 .nav a:hover { color: var(--brass-400); }
+
+/* The one link that leaves this site — it should not look like the rest. */
+.nav a.nav__cta {
+  display: inline-block;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--brass-500);
+  border-radius: 100px;
+  color: var(--brass-400);
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.nav a.nav__cta:hover {
+  background: var(--brass-500);
+  color: var(--ink-900);
+}
 
 .nav-toggle {
   display: none;
@@ -636,6 +660,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-size: var(--step-0);
 }
 .field textarea { min-height: 120px; resize: vertical; }
+
+.field__opt {
+  color: var(--bone-700);
+  letter-spacing: 0.08em;
+  text-transform: none;
+  font-style: italic;
+}
 .field input:focus,
 .field select:focus,
 .field textarea:focus {

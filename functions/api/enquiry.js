@@ -95,7 +95,7 @@ export async function onRequestPost({ request, env }) {
   if (!env.RESEND_API_KEY || !to.length || !env.ENQUIRY_FROM) {
     console.error("enquiry: missing RESEND_API_KEY, ENQUIRY_TO or ENQUIRY_FROM");
     return json(
-      { ok: false, error: "The form is not connected yet. Please call +297 593 7285." },
+      { ok: false, error: "The form is not connected yet. Please write to sales@casabellaaruba.com." },
       503
     );
   }

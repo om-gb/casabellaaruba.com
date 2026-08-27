@@ -1875,8 +1875,9 @@ body {
   right: 1rem;
   bottom: 1rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-width: 360px;
+  /* Single action since the call button was removed. */
+  grid-template-columns: 1fr;
+  min-width: 240px;
   border: 1px solid rgba(233, 224, 207, 0.22);
   border-radius: 18px;
   overflow: hidden;

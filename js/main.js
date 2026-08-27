@@ -118,7 +118,7 @@
   var status = document.getElementById("form-status");
 
   var FALLBACK =
-    "We could not send that. Please call +297 593 7285 and we will pick it up from there.";
+    "We could not send that. Please try again in a moment — or write to us at sales@casabellaaruba.com.";
 
   if (form) {
     form.addEventListener("submit", function (e) {
