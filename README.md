@@ -127,6 +127,26 @@ ENQUIRY_TO="you@example.com"
 ENQUIRY_FROM="Casabella <site@example.com>"
 ```
 
+## Cache busting — read before changing CSS or JS
+
+`_headers` caches `/css/*` and `/js/*` at the edge for **seven days**. Every
+page therefore links its stylesheet and script with a version query:
+
+```html
+<link rel="stylesheet" href="/css/styles.css?v=20260828-1" />
+<script src="/js/main.js?v=20260828-1" defer></script>
+```
+
+**Bump that string in the same commit as any CSS or JS change**, or the change
+ships and visitors keep the old file for up to a week. Cloudflare will report
+the deploy as successful either way — the HTML updates, the stylesheet does
+not, and the page renders new markup with old styles.
+
+This bit us once: a header button shipped, verified fine in the HTML, and
+rendered unstyled for two days behind a `cf-cache-status: HIT`.
+
+Each page owns its own version string. Use the date plus a counter.
+
 ## Deploy
 
 Two routes. **Git is the one to want** — after a one-time connect, publishing is
