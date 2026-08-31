@@ -319,6 +319,21 @@ textarea {
   border-bottom-color: var(--brass-500);
 }
 
+/* The one link that leaves this site — same brass pill as the umbrella and
+   suites pages, so "back to Casabella" reads the same everywhere. */
+.nav a.nav__home {
+  border: 1px solid var(--brass-500);
+  border-radius: 100px;
+  padding: 0.45rem 0.95rem;
+  color: var(--brass-400);
+  border-bottom-color: var(--brass-500);
+}
+.nav a.nav__home:hover {
+  background: var(--brass-500);
+  color: var(--ink-900);
+  border-bottom-color: var(--brass-500);
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -1519,6 +1534,12 @@ dialog.enquiry-drawer:not([open]) {
     padding-block: 0.9em;
     border-bottom: 1px solid var(--line);
     font-size: var(--step-0);
+  }
+
+  .nav a.nav__home {
+    width: auto;
+    margin-top: var(--gap-sm);
+    padding-block: 0.6em;
   }
 
   .split--reverse .split__media {
