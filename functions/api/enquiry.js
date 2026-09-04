@@ -54,7 +54,35 @@ async function readFields(request) {
 
 const clean = (value, max) => String(value == null ? "" : value).trim().slice(0, max);
 
+// Every real submission is a fetch() from one of our own pages, and browsers
+// always send Origin on a POST. A script posting straight at this endpoint
+// sends neither Origin nor Referer — which is how the first spam arrived.
+const ALLOWED_HOSTS = [
+  "casabellaaruba.com",
+  "www.casabellaaruba.com",
+  "casabellaaruba-com.pages.dev"
+];
+
+function fromOurSite(request) {
+  const host = (value) => {
+    if (!value) return null;
+    try { return new URL(value).host; } catch { return null; }
+  };
+  const h = host(request.headers.get("origin")) || host(request.headers.get("referer"));
+  if (!h) return false;
+  // Pages gives each preview deployment its own subdomain.
+  return ALLOWED_HOSTS.includes(h) || h.endsWith(".casabellaaruba-com.pages.dev");
+}
+
+// No real person's name or phone number contains a URL.
+const LINKY = /https?:\/\/|www\.|\[url|<a\s/i;
+
 export async function onRequestPost({ request, env }) {
+  if (!fromOurSite(request)) {
+    console.error("enquiry: rejected — no matching Origin/Referer");
+    return json({ ok: false, error: "That submission could not be accepted." }, 403);
+  }
+
   let fields;
   try {
     fields = await readFields(request);
@@ -79,6 +107,19 @@ export async function onRequestPost({ request, env }) {
 
   if (!name || !email || (!message && interest !== "tower")) {
     return json({ ok: false, error: "Please fill in the required fields." }, 400);
+  }
+
+  // Both forms always submit an interest — a select on the umbrella page, a
+  // hidden field on Suites and Tower. A submission without one did not come
+  // from them, whatever its Origin header claims.
+  if (!Object.hasOwn(INTERESTS, interest)) {
+    console.error("enquiry: rejected — unknown interest " + JSON.stringify(interest));
+    return json({ ok: false, error: "That submission could not be accepted." }, 400);
+  }
+
+  if (LINKY.test(name) || LINKY.test(phone)) {
+    console.error("enquiry: rejected — link in name or phone");
+    return json({ ok: false, error: "That submission could not be accepted." }, 400);
   }
 
   // Deliberately loose — the strict grammar rejects valid addresses, and a
