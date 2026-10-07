@@ -18,6 +18,7 @@ casabellaaruba.com/
 ├── js/main.js        sticky header, mobile nav, reveal, project filter, form
 ├── assets/img/       hero, project cards, favicon, og-cover
 ├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
+├── tv/               office TV slideshow at /tv/ (clock, weather)
 ├── functions/api/    enquiry.js — the form handler (Cloudflare Function)
 ├── _headers          cache + security headers
 ├── wrangler.toml     project name + compatibility date
@@ -68,6 +69,24 @@ The complete Tower sales site lives at `/tower/`, with Spanish at
 `/tower/es/`. Its assets are namespaced under `/tower/assets/`, so they cannot
 collide with company-site imagery. Both company and Tower enquiry forms post to
 the shared Cloudflare Function at `/api/enquiry`.
+
+## Office TV display
+
+`/tv/` is a self-running slideshow for the TV in the office: Tower and Suites
+photos with copy from their pages, plus a clock (Aruba time, with New York and
+Amsterdam underneath), live Aruba weather and sunset from
+[Open-Meteo](https://open-meteo.com) (free, no key). One file, everything
+inline, `noindex` and disallowed in `robots.txt`.
+
+Open `https://casabellaaruba.com/tv/` in the TV's browser and click once (or
+press **F**) for fullscreen. Remote arrows step through slides; **Space** or
+**Enter** pauses. Options: `?h24=1` for a 24-hour clock, `?speed=1.5` for
+slower slides, `?noweather=1` to hide weather. It reloads itself at 03:30 each
+night, so site changes reach the TV without anyone touching it.
+
+To add or change a slide, edit the `<section class="slide">` blocks in
+`tv/index.html` — the progress bar and counter count them automatically.
+**Prices there are copied from the Tower page — update both together.**
 
 ## Single-file preview
 
