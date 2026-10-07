@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Casabella Aruba — Office Display</title>
+    <!-- Lobby/office TV loop. Not a public page: keep it out of search. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0e0d0b" />
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!--
+      Casabella office display
+      ------------------------
+      A self-running slideshow for the TV in the office: Tower and Suites
+      imagery with copy taken from /tower/ and /suites/, plus a clock,
+      Aruba weather and sunset.
+
+      Everything is inline — no shared CSS/JS — so the 7-day /css and /js
+      edge cache in _headers never serves this page stale styles.
+
+      Remote / keyboard:  ← →  previous / next   ·   Space / Enter  pause
+                          F  fullscreen         ·   click anywhere  fullscreen
+
+      URL options:  ?h24=1     24-hour clock
+                    ?speed=1.5 slower (2 = twice as long per slide)
+                    ?noweather=1  hide the weather block
+
+      ADDING A SLIDE: copy any <section class="slide"> block. data-project
+      sets the label in the bottom bar; data-seconds overrides the default
+      slide length. The progress bar and counter count the slides themselves.
+    -->
+    <style>
+      :root {
+        /* Tokens mirror /tower/css/styles.css so this reads as the same brand. */
+        --ink-900: #0e0d0b;
+        --ink-800: #16150f;
+        --ink-700: #1f1d17;
+        --line: rgba(233, 224, 207, 0.16);
+        --line-strong: rgba(233, 224, 207, 0.3);
+        --bone-100: #f6f1e7;
+        --bone-300: #e9e0cf;
+        --bone-500: rgba(233, 224, 207, 0.74);
+        --bone-700: rgba(233, 224, 207, 0.52);
+        --brass-400: #cfa863;
+        --brass-500: #b98f45;
+        --sand-50: #faf7f1;
+
+        --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+
+        /* Everything sizes off the screen height, so a 720p, 1080p and 4K
+           TV all show the same composition. */
+        --u: 1vh;
+        --pad: calc(var(--u) * 6);
+        --fade: 1400ms;
+        --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: var(--ink-900);
+        color: var(--bone-300);
+        font-family: var(--font-body);
+        font-weight: 300;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body.idle {
+        cursor: none;
+      }
+
+      /* --- Stage ---------------------------------------------------------- */
+
+      .stage {
+        position: fixed;
+        inset: 0;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity var(--fade) var(--ease),
+          visibility 0s linear var(--fade);
+      }
+
+      .slide.is-active {
+        opacity: 1;
+        visibility: visible;
+        transition:
+          opacity var(--fade) var(--ease),
+          visibility 0s;
+        z-index: 1;
+      }
+
+      .media {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: var(--ink-800);
+      }
+
+      .media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transform: scale(1.02);
+      }
+
+      /* Slow Ken Burns drift on whichever slide is showing. */
+      .slide.is-active .media img {
+        animation: drift var(--dur, 10s) linear forwards;
+      }
+
+      .slide:nth-of-type(even).is-active .media img {
+        animation-name: drift-alt;
+      }
+
+      @keyframes drift {
+        from {
+          transform: scale(1.02) translate3d(0, 0, 0);
+        }
+        to {
+          transform: scale(1.1) translate3d(-1.2%, -0.8%, 0);
+        }
+      }
+
+      @keyframes drift-alt {
+        from {
+          transform: scale(1.1) translate3d(1%, 0.6%, 0);
+        }
+        to {
+          transform: scale(1.02) translate3d(0, 0, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .slide.is-active .media img {
+          animation: none;
+        }
+      }
+
+      /* Scrims keep type legible over any photograph. */
+      .slide--full .media::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(14, 13, 11, 0.62) 0%, rgba(14, 13, 11, 0) 24%),
+          linear-gradient(0deg, rgba(14, 13, 11, 0.9) 0%, rgba(14, 13, 11, 0.45) 34%, rgba(14, 13, 11, 0) 60%),
+          linear-gradient(90deg, rgba(14, 13, 11, 0.5) 0%, rgba(14, 13, 11, 0) 55%);
+      }
+
+      /* --- Type ----------------------------------------------------------- */
+
+      .copy {
+        position: absolute;
+        left: var(--pad);
+        bottom: calc(var(--u) * 13);
+        max-width: 62vw;
+        z-index: 2;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--u) * 1.4);
+        margin: 0 0 calc(var(--u) * 2);
+        color: var(--brass-400);
+        font-size: calc(var(--u) * 1.7);
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: calc(var(--u) * 4);
+        height: 1px;
+        background: currentColor;
+      }
+
+      .title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-weight: 300;
+        font-size: calc(var(--u) * 8.4);
+        line-height: 1.02;
+        letter-spacing: -0.01em;
+        color: var(--bone-100);
+        text-wrap: balance;
+      }
+
+      .title em {
+        font-style: italic;
+        color: var(--brass-400);
+      }
+
+      .lede {
+        margin: calc(var(--u) * 2.6) 0 0;
+        max-width: 48em;
+        font-size: calc(var(--u) * 2.5);
+        line-height: 1.55;
+        color: var(--bone-500);
+        text-wrap: pretty;
+      }
+
+      /* Entrance: copy rises in a beat after the image fades up. */
+      .slide .copy > *,
+      .slide .panel > * {
+        opacity: 0;
+        transform: translateY(calc(var(--u) * 2));
+        transition:
+          opacity 900ms var(--ease),
+          transform 900ms var(--ease);
+      }
+
+      .slide.is-active .copy > *,
+      .slide.is-active .panel > * {
+        opacity: 1;
+        transform: none;
+      }
+
+      .slide.is-active .copy > :nth-child(1),
+      .slide.is-active .panel > :nth-child(1) {
+        transition-delay: 500ms;
+      }
+      .slide.is-active .copy > :nth-child(2),
+      .slide.is-active .panel > :nth-child(2) {
+        transition-delay: 650ms;
+      }
+      .slide.is-active .copy > :nth-child(3),
+      .slide.is-active .panel > :nth-child(3) {
+        transition-delay: 800ms;
+      }
+      .slide.is-active .copy > :nth-child(n + 4),
+      .slide.is-active .panel > :nth-child(n + 4) {
+        transition-delay: 950ms;
+      }
+
+      /* --- Stat row ------------------------------------------------------- */
+
+      .stats {
+        display: flex;
+        gap: calc(var(--u) * 5);
+        margin: calc(var(--u) * 4) 0 0;
+        padding: calc(var(--u) * 2.6) 0 0;
+        border-top: 1px solid var(--line-strong);
+      }
+
+      .stats div {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: calc(var(--u) * 0.6);
+      }
+
+      .stats dt {
+        font-size: calc(var(--u) * 1.5);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--bone-700);
+      }
+
+      .stats dd {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: calc(var(--u) * 5.4);
+        line-height: 1;
+        color: var(--bone-100);
+      }
+
+      /* --- Split slides (portrait images, floor plans) -------------------- */
+
+      .slide--split {
+        display: grid;
+        grid-template-columns: 44% 1fr;
+        background: var(--ink-900);
+      }
+
+      .slide--split.flip {
+        grid-template-columns: 1fr 44%;
+      }
+
+      .slide--split .media {
+        position: relative;
+        inset: auto;
+      }
+
+      .slide--split.flip .media {
+        order: 2;
+      }
+
+      .slide--split .media--plan {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: calc(var(--u) * 15) 0 calc(var(--u) * 11) var(--pad);
+        background: var(--ink-900);
+      }
+
+      .slide--split .media--plan img {
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        background: var(--sand-50);
+        box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 6) rgba(0, 0, 0, 0.45);
+        transform: none;
+      }
+
+      .slide.is-active .media--plan img {
+        animation: none;
+      }
+
+      .panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: calc(var(--u) * 14) calc(var(--pad) * 1.3) calc(var(--u) * 13);
+        background:
+          radial-gradient(120% 80% at 100% 0%, rgba(207, 168, 99, 0.08), transparent 60%),
+          var(--ink-900);
+      }
+
+      .panel .title {
+        font-size: calc(var(--u) * 7);
+      }
+
+      /* --- Lists ---------------------------------------------------------- */
+
+      .list {
+        list-style: none;
+        margin: calc(var(--u) * 3.6) 0 0;
+        padding: 0;
+        display: grid;
+        gap: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .list li {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: calc(var(--u) * 3);
+        padding: calc(var(--u) * 1.5) 0;
+        border-bottom: 1px solid var(--line);
+        font-size: calc(var(--u) * 2.3);
+        color: var(--bone-300);
+      }
+
+      .list li span:last-child {
+        color: var(--bone-700);
+        font-size: calc(var(--u) * 1.9);
+        text-align: right;
+      }
+
+      .list--num {
+        counter-reset: n;
+      }
+
+      .list--num li {
+        justify-content: flex-start;
+      }
+
+      .list--num li::before {
+        counter-increment: n;
+        content: counter(n, decimal-leading-zero);
+        min-width: calc(var(--u) * 4);
+        color: var(--brass-400);
+        font-size: calc(var(--u) * 1.6);
+        letter-spacing: 0.1em;
+      }
+
+      /* --- Residences table ----------------------------------------------- */
+
+      .slide--text {
+        background:
+          radial-gradient(70% 90% at 85% 10%, rgba(207, 168, 99, 0.1), transparent 60%),
+          var(--ink-900);
+      }
+
+      .slide--text .panel {
+        position: absolute;
+        inset: 0;
+        background: none;
+        padding-left: var(--pad);
+        padding-right: var(--pad);
+      }
+
+      .units {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: calc(var(--u) * 2.4);
+        margin-top: calc(var(--u) * 4.5);
+      }
+
+      .unit {
+        padding: calc(var(--u) * 2.8) calc(var(--u) * 3);
+        border: 1px solid var(--line);
+        background: rgba(233, 224, 207, 0.025);
+      }
+
+      .unit__key {
+        display: flex;
+        align-items: baseline;
+        gap: calc(var(--u) * 1.4);
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: calc(var(--u) * 4.2);
+        line-height: 1;
+        color: var(--bone-100);
+      }
+
+      .unit__key small {
+        font-family: var(--font-body);
+        font-size: calc(var(--u) * 1.45);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--bone-700);
+      }
+
+      .unit__meta {
+        margin: calc(var(--u) * 1.6) 0 0;
+        font-size: calc(var(--u) * 1.95);
+        color: var(--bone-500);
+      }
+
+      .unit__price {
+        margin: calc(var(--u) * 1.2) 0 0;
+        font-size: calc(var(--u) * 2.2);
+        color: var(--brass-400);
+        font-weight: 400;
+      }
+
+      .fineprint {
+        margin-top: calc(var(--u) * 2.6);
+        font-size: calc(var(--u) * 1.5);
+        color: var(--bone-700);
+      }
+
+      /* --- Photo mosaic --------------------------------------------------- */
+
+      .slide--grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: calc(var(--u) * 0.6);
+        background: var(--ink-900);
+      }
+
+      .slide--grid .media {
+        position: relative;
+        inset: auto;
+      }
+
+      .slide--grid .media:first-child {
+        grid-row: span 2;
+      }
+
+      .slide--grid .tag {
+        position: absolute;
+        left: calc(var(--u) * 2.2);
+        top: calc(var(--u) * 2.2);
+        z-index: 1;
+        padding: calc(var(--u) * 0.7) calc(var(--u) * 1.4);
+        background: rgba(14, 13, 11, 0.7);
+        font-size: calc(var(--u) * 1.4);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--bone-300);
+      }
+
+      .slide--grid .media:first-child .tag {
+        top: auto;
+        bottom: calc(var(--u) * 15);
+      }
+
+      .slide--grid .media:nth-child(2) .tag,
+      .slide--grid .media:nth-child(3) .tag {
+        top: auto;
+        bottom: calc(var(--u) * 2.2);
+      }
+
+      .slide--grid .panel {
+        justify-content: flex-start;
+        padding: calc(var(--u) * 4.5) var(--pad) calc(var(--u) * 12) calc(var(--u) * 4.5);
+      }
+
+      .slide--grid .panel .title {
+        font-size: calc(var(--u) * 5.6);
+      }
+
+      .slide--grid .panel .lede {
+        font-size: calc(var(--u) * 2.2);
+      }
+
+      /* --- Closing card --------------------------------------------------- */
+
+      .slide--close {
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background:
+          radial-gradient(60% 70% at 50% 40%, rgba(207, 168, 99, 0.12), transparent 70%),
+          var(--ink-900);
+      }
+
+      .slide--close .panel {
+        background: none;
+        padding: 0;
+        align-items: center;
+      }
+
+      .mark {
+        width: calc(var(--u) * 13);
+        height: calc(var(--u) * 13);
+        margin-bottom: calc(var(--u) * 3);
+      }
+
+      .slide--close .eyebrow::before {
+        display: none;
+      }
+
+      .contact {
+        display: flex;
+        gap: calc(var(--u) * 5);
+        margin-top: calc(var(--u) * 5);
+        padding-top: calc(var(--u) * 3);
+        border-top: 1px solid var(--line-strong);
+        font-size: calc(var(--u) * 2.6);
+        color: var(--bone-300);
+      }
+
+      .contact span {
+        display: block;
+        margin-bottom: calc(var(--u) * 0.8);
+        font-size: calc(var(--u) * 1.4);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--bone-700);
+      }
+
+      /* --- HUD: brand, clock, weather, progress --------------------------- */
+
+      .hud {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .hud::before,
+      .hud::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+      }
+
+      .hud::before {
+        top: 0;
+        height: calc(var(--u) * 26);
+        background: linear-gradient(180deg, rgba(14, 13, 11, 0.6), rgba(14, 13, 11, 0));
+      }
+
+      .hud::after {
+        bottom: 0;
+        height: calc(var(--u) * 14);
+        background: linear-gradient(0deg, rgba(14, 13, 11, 0.7), rgba(14, 13, 11, 0));
+      }
+
+      .top,
+      .bottom {
+        z-index: 1;
+      }
+
+      .top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: calc(var(--u) * 4.4) var(--pad) 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--u) * 1.6);
+        color: var(--bone-100);
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+      }
+
+      .brand svg {
+        width: calc(var(--u) * 5.2);
+        height: calc(var(--u) * 5.2);
+      }
+
+      .brand b {
+        display: block;
+        font-family: var(--font-display);
+        font-weight: 400;
+        font-size: calc(var(--u) * 3.4);
+        line-height: 1;
+        letter-spacing: 0.02em;
+      }
+
+      .brand small {
+        display: block;
+        margin-top: calc(var(--u) * 0.5);
+        font-size: calc(var(--u) * 1.3);
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--brass-400);
+      }
+
+      .info {
+        display: flex;
+        align-items: stretch;
+        gap: calc(var(--u) * 3);
+        padding: calc(var(--u) * 2) calc(var(--u) * 3);
+        background: rgba(14, 13, 11, 0.55);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      .clock {
+        text-align: right;
+      }
+
+      .clock__time {
+        font-family: var(--font-display);
+        font-weight: 300;
+        font-size: calc(var(--u) * 7.4);
+        line-height: 0.9;
+        color: var(--bone-100);
+        font-variant-numeric: tabular-nums lining-nums;
+        letter-spacing: -0.01em;
+      }
+
+      .clock__time .ampm {
+        margin-left: calc(var(--u) * 0.6);
+        font-family: var(--font-body);
+        font-size: calc(var(--u) * 1.8);
+        letter-spacing: 0.14em;
+        color: var(--brass-400);
+      }
+
+      .clock__time .colon {
+        animation: blink 2s steps(1) infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.35;
+        }
+      }
+
+      .clock__date {
+        margin-top: calc(var(--u) * 1.2);
+        font-size: calc(var(--u) * 1.8);
+        letter-spacing: 0.06em;
+        color: var(--bone-500);
+      }
+
+      .weather {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-right: calc(var(--u) * 3);
+        border-right: 1px solid var(--line);
+        min-width: calc(var(--u) * 20);
+      }
+
+      .weather[hidden] {
+        display: none;
+      }
+
+      .weather__now {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--u) * 1.2);
+      }
+
+      .weather__icon {
+        width: calc(var(--u) * 4.6);
+        height: calc(var(--u) * 4.6);
+        color: var(--brass-400);
+      }
+
+      .weather__temp {
+        font-family: var(--font-display);
+        font-size: calc(var(--u) * 5.2);
+        line-height: 1;
+        color: var(--bone-100);
+        font-variant-numeric: lining-nums;
+      }
+
+      .weather__temp small {
+        margin-left: calc(var(--u) * 0.6);
+        font-family: var(--font-body);
+        font-size: calc(var(--u) * 1.6);
+        color: var(--bone-700);
+      }
+
+      .weather__desc,
+      .weather__meta {
+        font-size: calc(var(--u) * 1.6);
+        color: var(--bone-500);
+        white-space: nowrap;
+      }
+
+      .weather__meta {
+        color: var(--bone-700);
+      }
+
+      .zones {
+        display: flex;
+        justify-content: flex-end;
+        gap: calc(var(--u) * 2.4);
+        margin-top: calc(var(--u) * 1.2);
+        font-size: calc(var(--u) * 1.5);
+        color: var(--bone-700);
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .zones b {
+        font-weight: 400;
+        color: var(--bone-300);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .bottom {
+        position: absolute;
+        left: var(--pad);
+        right: var(--pad);
+        bottom: calc(var(--u) * 4.6);
+        display: flex;
+        align-items: center;
+        gap: calc(var(--u) * 3);
+        font-size: calc(var(--u) * 1.5);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--bone-500);
+      }
+
+      .project-label {
+        min-width: calc(var(--u) * 26);
+        color: var(--bone-300);
+      }
+
+      .project-label::before {
+        content: "";
+        display: inline-block;
+        width: calc(var(--u) * 1);
+        height: calc(var(--u) * 1);
+        margin-right: calc(var(--u) * 1.2);
+        border-radius: 50%;
+        background: var(--brass-400);
+        vertical-align: 0.05em;
+      }
+
+      .progress {
+        flex: 1;
+        display: flex;
+        gap: calc(var(--u) * 0.6);
+      }
+
+      .progress i {
+        flex: 1;
+        height: 2px;
+        background: var(--line-strong);
+        overflow: hidden;
+      }
+
+      .progress i::after {
+        content: "";
+        display: block;
+        height: 100%;
+        background: var(--bone-100);
+        transform-origin: left;
+        transform: scaleX(0);
+      }
+
+      .progress i.done::after {
+        transform: scaleX(1);
+      }
+
+      .progress i.now::after {
+        animation: fill var(--dur, 10s) linear forwards;
+      }
+
+      body.paused .progress i.now::after,
+      body.paused .slide.is-active .media img {
+        animation-play-state: paused;
+      }
+
+      @keyframes fill {
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      .counter {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .paused-pill {
+        display: none;
+        color: var(--brass-400);
+      }
+
+      body.paused .paused-pill {
+        display: inline;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage" id="stage">
+      <!-- ============ Casabella Aruba ============ -->
+
+      <section class="slide slide--full" data-project="Casabella Aruba">
+        <div class="media">
+          <img src="/assets/img/hero.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">Property development · Aruba</p>
+          <h1 class="title">A family name on <em>every</em> building.</h1>
+          <p class="lede">
+            A family-owned developer in Aruba. A small portfolio, built for the
+            heat and designed to run on the island's own sunlight.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ Casabella Tower ============ -->
+
+      <section class="slide slide--full" data-project="Casabella Tower">
+        <div class="media">
+          <img src="/tower/assets/img/hero.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">Now selling · Palm Beach</p>
+          <h2 class="title">Casabella Tower</h2>
+          <p class="lede">
+            Ocean-view residences in Palm Beach — five minutes on foot from the
+            sand, the restaurants and the hotels.
+          </p>
+          <dl class="stats">
+            <div><dt>Residences</dt><dd>17</dd></div>
+            <div><dt>Floors</dt><dd>5</dd></div>
+            <div><dt>Parking</dt><dd>14</dd></div>
+            <div><dt>Pre-construction from</dt><dd>$591,225</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="slide slide--split" data-project="Casabella Tower">
+        <div class="media">
+          <img src="/tower/assets/img/tower-exterior.jpg" alt="" />
+        </div>
+        <div class="panel">
+          <p class="eyebrow">The Tower</p>
+          <h2 class="title">A small building on the best-walked street in Aruba.</h2>
+          <p class="lede">
+            A low-rise in Palm Beach with four residences to a floor, topped by
+            three-level loft homes with private roof terraces.
+          </p>
+          <dl class="stats">
+            <div><dt>Floors</dt><dd>5</dd></div>
+            <div><dt>Residences</dt><dd>17</dd></div>
+            <div><dt>Layouts</dt><dd>9</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella Tower">
+        <div class="media">
+          <img src="/tower/assets/img/gallery/01-west-elevation.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">Architecture</p>
+          <h2 class="title">Deliberately quiet.</h2>
+          <p class="lede">
+            White volumes stepped back as the building rises, deep planted
+            balconies that shade the glass through the afternoon, and a
+            timber-screened stair core that carries light down the west façade
+            after dark.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--text" data-project="Casabella Tower" data-seconds="16">
+        <div class="panel">
+          <p class="eyebrow">Residences</p>
+          <h2 class="title">Four residences to a floor.</h2>
+          <div class="units">
+            <div class="unit">
+              <p class="unit__key">A <small>Corner</small></p>
+              <p class="unit__meta">82.56 – 82.59 m² · 2 bed · 2 bath</p>
+              <p class="unit__price">From $591,225</p>
+            </div>
+            <div class="unit">
+              <p class="unit__key">B <small>Wide-plan</small></p>
+              <p class="unit__meta">86.45 m² · 2 bed · 2 bath</p>
+              <p class="unit__price">$617,681</p>
+            </div>
+            <div class="unit">
+              <p class="unit__key">C <small>Deep balcony</small></p>
+              <p class="unit__meta">87.38 – 87.40 m² · 2 bed · 2 bath</p>
+              <p class="unit__price">From $620,794</p>
+            </div>
+            <div class="unit">
+              <p class="unit__key">D <small>Quiet side</small></p>
+              <p class="unit__meta">83.35 – 84.99 m² · 2 bed · 2 bath</p>
+              <p class="unit__price">From $592,369</p>
+            </div>
+            <div class="unit">
+              <p class="unit__key">04 <small>Upper floor</small></p>
+              <p class="unit__meta">66.14 – 70.10 m² · 2 bed · 2 bath</p>
+              <p class="unit__price">From $676,174</p>
+            </div>
+            <div class="unit">
+              <p class="unit__key">L <small>Loft · three levels</small></p>
+              <p class="unit__meta">146.70 – 173.17 m² · roof terrace</p>
+              <p class="unit__price">From $1,301,249</p>
+            </div>
+          </div>
+          <p class="fineprint">
+            Pre-construction prices. Areas include balconies and, for lofts,
+            private roof terraces. Indicative and subject to change and
+            availability.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--split" data-project="Casabella Tower">
+        <div class="media media--plan">
+          <img src="/tower/assets/img/floorplans/floor-2@1200.jpg" alt="" />
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Floor plans</p>
+          <h2 class="title">No long corridors.</h2>
+          <p class="lede">
+            Four residences surround an open-air hallway, elevator and stair
+            core — so no home faces only its neighbours. Each has two bedrooms,
+            two bathrooms and its own balcony.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--split" data-project="Casabella Tower">
+        <div class="media">
+          <img src="/tower/assets/img/gallery/02-penthouse-terraces.jpg" alt="" />
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Loft residences</p>
+          <h2 class="title">Three levels, and a roof terrace of your own.</h2>
+          <p class="lede">
+            Living level, raised main suite and private roof terrace, connected
+            as one home by an internal stair.
+          </p>
+          <dl class="stats">
+            <div><dt>Area</dt><dd>147–173 m²</dd></div>
+            <div><dt>From</dt><dd>$1.30M</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="slide slide--split flip" data-project="Casabella Tower" data-seconds="13">
+        <div class="media">
+          <img src="/tower/assets/img/gallery/03-pool-terrace.jpg" alt="" />
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Amenities</p>
+          <h2 class="title">Kept for residents.</h2>
+          <ul class="list list--num">
+            <li>Private pool</li>
+            <li>Rooftop gym &amp; cabanas</li>
+            <li>West-facing roof terrace</li>
+            <li>Gazebo &amp; BBQ areas</li>
+            <li>Secured basement parking</li>
+            <li>Rooftop solar array</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella Tower">
+        <div class="media">
+          <img src="/tower/assets/img/gallery/04-rooftop-terrace.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">The roof</p>
+          <h2 class="title">More than 145 m², facing west into the sunset.</h2>
+          <p class="lede">
+            Shared terrace, shaded cabanas and a residents' gym — beside the
+            solar array that offsets the building's common-area load.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--split" data-project="Casabella Tower">
+        <div class="media">
+          <img src="/tower/assets/img/location-aerial.jpg" alt="" />
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Location</p>
+          <h2 class="title">Everything within five minutes, on foot.</h2>
+          <ul class="list">
+            <li><span>Palm Beach</span><span>5 min walk</span></li>
+            <li><span>Restaurants &amp; bars</span><span>5 min walk</span></li>
+            <li><span>Hotel strip &amp; casinos</span><span>5 min walk</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ Casabella Suites ============ -->
+
+      <section class="slide slide--full" data-project="Casabella Suites">
+        <div class="media">
+          <img src="/suites/assets/img/hero.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">Completed 2026 · San Nicolas</p>
+          <h2 class="title">Casabella Suites</h2>
+          <p class="lede">
+            Eight suites that run on sunlight. A pool and barbecue on site, and
+            a private walled backyard behind every door.
+          </p>
+          <dl class="stats">
+            <div><dt>Suites</dt><dd>8</dd></div>
+            <div><dt>Backyards</dt><dd>8</dd></div>
+            <div><dt>Pool</dt><dd>On site</dd></div>
+            <div><dt>Power</dt><dd>100% solar</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella Suites">
+        <div class="media">
+          <img src="/suites/assets/img/building.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">The building</p>
+          <h2 class="title">Small on purpose.</h2>
+          <p class="lede">
+            A shaded walkway down the middle with four suites either side — and
+            behind each one, its own walled backyard that nobody overlooks.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--grid" data-project="Casabella Suites" data-seconds="13">
+        <div class="media">
+          <img src="/suites/assets/img/living.jpg" alt="" /><span class="tag">Living</span>
+        </div>
+        <div class="media">
+          <img src="/suites/assets/img/bedroom.jpg" alt="" /><span class="tag">Bedroom</span>
+        </div>
+        <div class="media">
+          <img src="/suites/assets/img/kitchen.jpg" alt="" /><span class="tag">Kitchen</span>
+        </div>
+        <div class="media">
+          <img src="/suites/assets/img/bathroom.jpg" alt="" /><span class="tag">Bathroom</span>
+        </div>
+        <div class="panel">
+          <p class="eyebrow">The suites</p>
+          <h2 class="title">Two layouts, eight suites.</h2>
+          <p class="lede">
+            Six one-bedroom, two two-bedroom. Every suite has its own kitchen,
+            bathroom and backyard.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella Suites">
+        <div class="media">
+          <img src="/suites/assets/img/pool.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">On site</p>
+          <h2 class="title">A pool shared by eight suites, not eight hundred.</h2>
+          <p class="lede">
+            A sun deck with a spa at the far end, and a barbecue and outdoor
+            kitchen under the pergola.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella Suites">
+        <div class="media">
+          <img src="/suites/assets/img/solar.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">Rooftop solar</p>
+          <h2 class="title">Every kilowatt comes off its own roof.</h2>
+          <p class="lede">
+            The suites, the air conditioning, the pool pump and the walkway
+            lights — all of it runs on the building's own array.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella Suites">
+        <div class="media">
+          <img src="/suites/assets/img/location.jpg" alt="" />
+        </div>
+        <div class="copy">
+          <p class="eyebrow">San Nicolas</p>
+          <h2 class="title">The half of Aruba most visitors never see.</h2>
+          <p class="lede">
+            The street murals, the bars that were here long before the hotels,
+            and a coastline that is not lined with resorts.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ Company ============ -->
+
+      <section class="slide slide--split flip" data-project="Casabella Aruba" data-seconds="14">
+        <div class="media">
+          <img src="/assets/img/about.jpg" alt="" />
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Our mission</p>
+          <h2 class="title">Build for the heat. Run on the sun.</h2>
+          <ul class="list list--num">
+            <li>Rooftop solar as standard</li>
+            <li>Shade before air conditioning</li>
+            <li>Cheap to run, not just to buy</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="slide slide--close" data-project="Casabella Aruba">
+        <div class="panel">
+          <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+            <g fill="none" stroke="#cfa863" stroke-width="1.6" stroke-linecap="square">
+              <path d="M10 52V34l10-8 10 8v18" />
+              <path d="M36 52V20l9-7 9 7v32" />
+              <path d="M6 52h52" />
+            </g>
+          </svg>
+          <p class="eyebrow">Family owned · Aruba</p>
+          <h2 class="title">Casabella Aruba</h2>
+          <div class="contact">
+            <div><span>Web</span>casabellaaruba.com</div>
+            <div><span>Email</span>sales@casabellaaruba.com</div>
+            <div><span>Phone</span>+297 593 7285</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Persistent overlay -->
+    <div class="hud" aria-hidden="true">
+      <div class="top">
+        <div class="brand">
+          <svg viewBox="0 0 64 64">
+            <g fill="none" stroke="#cfa863" stroke-width="2.6" stroke-linecap="square">
+              <path d="M10 52V34l10-8 10 8v18" />
+              <path d="M36 52V20l9-7 9 7v32" />
+              <path d="M6 52h52" />
+            </g>
+          </svg>
+          <div><b>Casabella</b><small>Aruba</small></div>
+        </div>
+
+        <div>
+          <div class="info">
+            <div class="weather" id="weather" hidden>
+              <div class="weather__now">
+                <svg class="weather__icon" id="w-icon" viewBox="0 0 24 24"></svg>
+                <div class="weather__temp" id="w-temp"></div>
+              </div>
+              <div class="weather__desc" id="w-desc"></div>
+              <div class="weather__meta" id="w-meta"></div>
+            </div>
+            <div class="clock">
+              <div class="clock__time" id="time"></div>
+              <div class="clock__date" id="date"></div>
+            </div>
+          </div>
+          <div class="zones" id="zones"></div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <span class="project-label" id="label"></span>
+        <div class="progress" id="progress"></div>
+        <span class="paused-pill">Paused</span>
+        <span class="counter" id="counter"></span>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var params = new URLSearchParams(location.search);
+
+        var CONFIG = {
+          timeZone: "America/Aruba",
+          // Second-row clocks: where buyers and family call from.
+          zones: [
+            { label: "New York", tz: "America/New_York" },
+            { label: "Amsterdam", tz: "Europe/Amsterdam" },
+          ],
+          hour12: params.get("h24") !== "1",
+          seconds: 10, // default slide length
+          speed: Math.max(0.25, parseFloat(params.get("speed")) || 1),
+          weather: params.get("noweather") !== "1",
+          // Oranjestad. Open-Meteo is free and needs no key.
+          lat: 12.52,
+          lon: -70.03,
+          weatherEveryMin: 15,
+          // Reload once a night to pick up site updates and shed any
+          // memory the TV browser has leaked over the day.
+          reloadAt: "03:30",
+        };
+
+        /* --- Slideshow --------------------------------------------------- */
+
+        var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+        var progress = document.getElementById("progress");
+        var label = document.getElementById("label");
+        var counter = document.getElementById("counter");
+        var bars = slides.map(function () {
+          var i = document.createElement("i");
+          progress.appendChild(i);
+          return i;
+        });
+
+        var index = -1;
+        var timer = null;
+        var paused = false;
+        var remaining = 0;
+        var startedAt = 0;
+
+        function lengthOf(slide) {
+          var s = parseFloat(slide.getAttribute("data-seconds")) || CONFIG.seconds;
+          return s * CONFIG.speed * 1000;
+        }
+
+        function pad(n) {
+          return n < 10 ? "0" + n : "" + n;
+        }
+
+        function show(next) {
+          next = (next + slides.length) % slides.length;
+          var slide = slides[next];
+          var ms = lengthOf(slide);
+
+          slides.forEach(function (s, i) {
+            s.classList.toggle("is-active", i === next);
+          });
+
+          // Restart CSS animations (Ken Burns + progress fill) cleanly.
+          document.documentElement.style.setProperty("--dur", ms + "ms");
+          bars.forEach(function (b, i) {
+            b.className = i < next ? "done" : "";
+          });
+          void progress.offsetWidth;
+          bars[next].className = "now";
+
+          label.textContent = slide.getAttribute("data-project") || "";
+          counter.textContent = pad(next + 1) + " / " + pad(slides.length);
+          index = next;
+
+          // Warm the slide after this one so its image is decoded in time.
+          var after = slides[(next + 1) % slides.length];
+          after.querySelectorAll("img").forEach(function (img) {
+            if (img.decode) img.decode().catch(function () {});
+          });
+
+          schedule(ms);
+        }
+
+        function schedule(ms) {
+          clearTimeout(timer);
+          remaining = ms;
+          startedAt = Date.now();
+          if (!paused) timer = setTimeout(function () { show(index + 1); }, ms);
+        }
+
+        function togglePause() {
+          paused = !paused;
+          document.body.classList.toggle("paused", paused);
+          if (paused) {
+            clearTimeout(timer);
+            remaining -= Date.now() - startedAt;
+          } else {
+            startedAt = Date.now();
+            timer = setTimeout(function () { show(index + 1); }, Math.max(0, remaining));
+          }
+        }
+
+        /* --- Clock ------------------------------------------------------- */
+
+        var timeEl = document.getElementById("time");
+        var dateEl = document.getElementById("date");
+        var zonesEl = document.getElementById("zones");
+
+        function parts(date, tz, opts) {
+          var o = { timeZone: tz };
+          for (var k in opts) o[k] = opts[k];
+          var out = {};
+          new Intl.DateTimeFormat("en-US", o).formatToParts(date).forEach(function (p) {
+            out[p.type] = p.value;
+          });
+          return out;
+        }
+
+        function shortTime(date, tz) {
+          return new Intl.DateTimeFormat("en-US", {
+            timeZone: tz,
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: CONFIG.hour12,
+          }).format(date);
+        }
+
+        var lastMinute = "";
+
+        function tick() {
+          var now = new Date();
+          var p = parts(now, CONFIG.timeZone, {
+            hour: CONFIG.hour12 ? "numeric" : "2-digit",
+            minute: "2-digit",
+            hour12: CONFIG.hour12,
+          });
+          var stamp = p.hour + ":" + p.minute;
+          if (stamp !== lastMinute) {
+            lastMinute = stamp;
+            timeEl.innerHTML =
+              p.hour + '<span class="colon">:</span>' + p.minute +
+              (CONFIG.hour12 && p.dayPeriod ? '<span class="ampm">' + p.dayPeriod + "</span>" : "");
+            dateEl.textContent = new Intl.DateTimeFormat("en-US", {
+              timeZone: CONFIG.timeZone,
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            }).format(now);
+            zonesEl.innerHTML = CONFIG.zones
+              .map(function (z) {
+                return z.label + " <b>" + shortTime(now, z.tz) + "</b>";
+              })
+              .join("");
+            maybeReload(p);
+          }
+        }
+
+        /* --- Weather ----------------------------------------------------- */
+
+        var ICONS = {
+          sun: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+          moon: '<path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1Z"/>',
+          partly: '<path d="M8.5 4.2v1.6M3.6 9.1h1.6M5 5.6l1.1 1.1M13 5.6l-1.1 1.1"/><path d="M5.9 11.3a3.6 3.6 0 0 1 6.4-3"/><path d="M7.5 19.5h10a3.5 3.5 0 0 0 .4-7 5 5 0 0 0-9.6 1.2A2.9 2.9 0 0 0 7.5 19.5Z"/>',
+          cloud: '<path d="M6.5 19h11a4 4 0 0 0 .5-8 5.8 5.8 0 0 0-11.2 1.4A3.3 3.3 0 0 0 6.5 19Z"/>',
+          rain: '<path d="M6.5 15h11a4 4 0 0 0 .5-8 5.8 5.8 0 0 0-11.2 1.4A3.3 3.3 0 0 0 6.5 15Z"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/>',
+          storm: '<path d="M6.5 14h11a4 4 0 0 0 .5-8 5.8 5.8 0 0 0-11.2 1.4A3.3 3.3 0 0 0 6.5 14Z"/><path d="M12.5 15l-2 3.5h3l-2 3.5"/>',
+          fog: '<path d="M4 9h16M6 13h12M4 17h16"/>',
+        };
+
+        // WMO weather codes → [description, icon]
+        function describe(code, isDay) {
+          if (code === 0) return ["Clear", isDay ? "sun" : "moon"];
+          if (code <= 2) return [code === 1 ? "Mostly clear" : "Partly cloudy", isDay ? "partly" : "cloud"];
+          if (code === 3) return ["Overcast", "cloud"];
+          if (code <= 48) return ["Haze", "fog"];
+          if (code <= 57) return ["Drizzle", "rain"];
+          if (code <= 67) return ["Rain", "rain"];
+          if (code <= 77) return ["Showers", "rain"];
+          if (code <= 82) return ["Rain showers", "rain"];
+          return ["Thunderstorms", "storm"];
+        }
+
+        function hm(iso) {
+          // Open-Meteo returns local wall time ("2026-10-07T18:22").
+          var t = iso.split("T")[1].split(":");
+          var h = +t[0];
+          if (!CONFIG.hour12) return pad(h) + ":" + t[1];
+          return (h % 12 || 12) + ":" + t[1] + " " + (h < 12 ? "AM" : "PM");
+        }
+
+        function loadWeather() {
+          var url =
+            "https://api.open-meteo.com/v1/forecast?latitude=" + CONFIG.lat +
+            "&longitude=" + CONFIG.lon +
+            "&current=temperature_2m,weather_code,wind_speed_10m,is_day" +
+            "&daily=sunrise,sunset,temperature_2m_max" +
+            "&timezone=" + encodeURIComponent(CONFIG.timeZone) +
+            "&forecast_days=1";
+
+          fetch(url, { cache: "no-store" })
+            .then(function (r) {
+              if (!r.ok) throw new Error(r.status);
+              return r.json();
+            })
+            .then(function (d) {
+              var c = d.current;
+              var desc = describe(c.weather_code, c.is_day === 1);
+              var f = Math.round(c.temperature_2m * 9 / 5 + 32);
+              document.getElementById("w-temp").innerHTML =
+                Math.round(c.temperature_2m) + "°<small>C · " + f + "°F</small>";
+              document.getElementById("w-icon").innerHTML =
+                '<g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">' +
+                ICONS[desc[1]] + "</g>";
+
+              // Aruba's trade wind is the second thing anyone asks about.
+              document.getElementById("w-desc").textContent =
+                desc[0] + " · Wind " + Math.round(c.wind_speed_10m) + " km/h";
+
+              var now = Date.now();
+              var sunset = d.daily.sunset[0];
+              var sunrise = d.daily.sunrise[0];
+              var label = c.is_day === 1 ? "Sunset " + hm(sunset) : "Sunrise " + hm(sunrise);
+              document.getElementById("w-meta").textContent =
+                label + " · High " + Math.round(d.daily.temperature_2m_max[0]) + "°";
+
+              document.getElementById("weather").hidden = false;
+            })
+            .catch(function () {
+              // Offline or API down: keep the last good reading, or stay hidden.
+            });
+        }
+
+        /* --- Nightly reload ---------------------------------------------- */
+
+        var bootedAt = Date.now();
+
+        function maybeReload(p) {
+          var h = +p.hour;
+          if (CONFIG.hour12) h = (h % 12) + (p.dayPeriod === "PM" ? 12 : 0);
+          if (pad(h) + ":" + p.minute !== CONFIG.reloadAt) return;
+          if (Date.now() - bootedAt < 60 * 60 * 1000) return;
+          // Only reload if the site is reachable — a reload while offline
+          // would leave the TV on an error page until someone notices.
+          fetch(location.href, { method: "HEAD", cache: "no-store" })
+            .then(function (r) {
+              if (r.ok) location.reload();
+            })
+            .catch(function () {});
+        }
+
+        /* --- TV niceties ------------------------------------------------- */
+
+        // Keep the screen from sleeping where the browser allows it.
+        var lock = null;
+        function wake() {
+          if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+          navigator.wakeLock.request("screen").then(function (l) { lock = l; }).catch(function () {});
+        }
+        document.addEventListener("visibilitychange", wake);
+
+        function fullscreen() {
+          var el = document.documentElement;
+          if (document.fullscreenElement) return;
+          var req = el.requestFullscreen || el.webkitRequestFullscreen;
+          if (req) {
+            var r = req.call(el);
+            if (r && r.catch) r.catch(function () {});
+          }
+          wake();
+        }
+
+        var idleTimer;
+        function active() {
+          document.body.classList.remove("idle");
+          clearTimeout(idleTimer);
+          idleTimer = setTimeout(function () { document.body.classList.add("idle"); }, 2500);
+        }
+
+        document.addEventListener("mousemove", active);
+        document.addEventListener("click", fullscreen);
+        document.addEventListener("keydown", function (e) {
+          switch (e.key) {
+            case "ArrowRight":
+            case "PageDown":
+            case "MediaTrackNext":
+              show(index + 1);
+              break;
+            case "ArrowLeft":
+            case "PageUp":
+            case "MediaTrackPrevious":
+              show(index - 1);
+              break;
+            case " ":
+            case "Enter":
+            case "MediaPlayPause":
+              togglePause();
+              break;
+            case "f":
+            case "F":
+              fullscreen();
+              break;
+            default:
+              return;
+          }
+          e.preventDefault();
+        });
+
+        /* --- Go ---------------------------------------------------------- */
+
+        tick();
+        setInterval(tick, 1000);
+        if (CONFIG.weather) {
+          loadWeather();
+          setInterval(loadWeather, CONFIG.weatherEveryMin * 60 * 1000);
+        }
+        active();
+        wake();
+        show(0);
+      })();
+    </script>
+  </body>
+</html>
