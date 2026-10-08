@@ -18,8 +18,8 @@ casabellaaruba.com/
 ├── js/main.js        sticky header, mobile nav, reveal, project filter, form
 ├── assets/img/       hero, project cards, favicon, og-cover
 ├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
-├── tv/               office TV slideshow at /tv/ (clock, weather)
-├── functions/api/    enquiry.js — the form handler (Cloudflare Function)
+├── tv/               office TV slideshow at /tv/, live dashboard at /tv/live/
+├── functions/api/    enquiry.js (form handler), live.js (dashboard news + rates)
 ├── _headers          cache + security headers
 ├── wrangler.toml     project name + compatibility date
 ├── robots.txt
@@ -87,6 +87,21 @@ night, so site changes reach the TV without anyone touching it.
 To add or change a slide, edit the `<section class="slide">` blocks in
 `tv/index.html` — the progress bar and counter count them automatically.
 **Prices there are copied from the Tower page — update both together.**
+
+### Live dashboard
+
+`/tv/live/` is the non-slideshow alternative: one fixed screen that updates in
+place. Headlines (Aruba from Google News, world and business from the BBC)
+rotate through a featured slot every 12 seconds above an "up next" list and a
+scrolling ticker; alongside sit the clock, Aruba weather with the next six
+hours and the sun's progress, sea temperature and waves off Palm Beach, the
+trade wind, and USD exchange rates (EUR/GBP/CAD from the European Central
+Bank; AWG is the fixed 1.79 peg).
+
+Browsers cannot read news feeds from other sites, so `functions/api/live.js`
+fetches and trims them server-side and caches the result for five minutes.
+Weather comes straight from Open-Meteo, as on `/tv/`. Any source that is down
+leaves its panel showing a quiet message instead of breaking the page.
 
 ## Single-file preview
 
