@@ -18,8 +18,8 @@ casabellaaruba.com/
 ├── js/main.js        sticky header, mobile nav, reveal, project filter, form
 ├── assets/img/       hero, project cards, favicon, og-cover
 ├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
-├── tv/               office TV slideshow at /tv/ (clock, weather)
-├── functions/api/    enquiry.js — the form handler (Cloudflare Function)
+├── tv/               office TV slideshow at /tv/, live dashboard at /tv/live/
+├── functions/api/    enquiry.js (form handler), live.js (dashboard news + rates)
 ├── _headers          cache + security headers
 ├── wrangler.toml     project name + compatibility date
 ├── robots.txt
@@ -87,6 +87,26 @@ night, so site changes reach the TV without anyone touching it.
 To add or change a slide, edit the `<section class="slide">` blocks in
 `tv/index.html` — the progress bar and counter count them automatically.
 **Prices there are copied from the Tower page — update both together.**
+
+### Live dashboard
+
+`/tv/live/` puts the photography first: Tower and Suites photos fill the
+screen, crossfading every 14 seconds with a caption, over a bar of live
+widgets along the bottom — clock, Aruba weather, the next three hours, a
+rotating headline (Aruba from Google News, world and business from the BBC),
+sea temperature, waves and wind, and USD exchange rates (EUR/GBP from the
+European Central Bank; AWG is the fixed 1.79 peg). To add a photo, add a line
+to `PHOTOS` in the page's script — landscape images only.
+
+Browsers cannot read news feeds from other sites, so `functions/api/live.js`
+fetches and trims them server-side and caches the result for five minutes.
+Weather comes straight from Open-Meteo, as on `/tv/`. Any source that is down
+leaves its widget showing a quiet message instead of breaking the page.
+
+Both TV pages open on a short loading screen that downloads and decodes every
+photo before the first one shows, so changing photos never stalls on a slow
+TV. It gives up waiting after 30 seconds, so one missing photo cannot hold
+the screen.
 
 ## Single-file preview
 
