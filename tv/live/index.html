@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Casabella Aruba — Live</title>
-    <!-- Office TV dashboard. Not a public page: keep it out of search. -->
+    <!-- Office TV display. Not a public page: keep it out of search. -->
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#0e0d0b" />
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
@@ -15,12 +15,15 @@
       rel="stylesheet"
     />
     <!--
-      Casabella office dashboard
-      --------------------------
-      A single live screen rather than a slideshow: headlines (Aruba, world,
-      business), clock, Aruba weather with the next hours, sea conditions,
-      exchange rates and a small Casabella project card. Everything updates
-      in place.
+      Casabella office display — live
+      -------------------------------
+      Full-screen project photography with a bar of live widgets along the
+      bottom: clock, Aruba weather, the next few hours, a rotating headline,
+      sea and wind, and exchange rates.
+
+      Every photo is downloaded and decoded behind a short loading screen
+      before the first one shows, so changing photos never waits on the
+      network or the TV's image decoder.
 
       Data:
         /api/live       headlines + exchange rates (functions/api/live.js)
@@ -28,9 +31,12 @@
 
       Written for old smart-TV browsers, like /tv/: no CSS variables, grid or
       flex gap, -webkit- animation twins, and plain ES5 with XHR. Each data
-      source fails on its own and leaves its panel showing a quiet message.
+      source fails on its own and leaves its widget showing a quiet message.
 
-      Remote / keyboard:  ← →  previous / next headline   ·   F  fullscreen
+      ADDING A PHOTO: add a line to PHOTOS in the script below. Landscape
+      images only — the photo fills the screen.
+
+      Remote / keyboard:  ← →  previous / next photo   ·   F  fullscreen
       URL options:  ?h24=1  24-hour clock
     -->
     <style>
@@ -52,45 +58,127 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      body {
-        background:
-          radial-gradient(60% 70% at 100% 0%, rgba(207, 168, 99, 0.09), transparent 60%),
-          radial-gradient(50% 60% at 0% 100%, rgba(207, 168, 99, 0.05), transparent 60%),
-          #0e0d0b;
-      }
-
       body.idle {
         cursor: none;
       }
 
-      .serif {
-        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
-      }
-
       .label {
-        font-size: 1.45vh;
+        font-size: 1.3vh;
         font-weight: 500;
         letter-spacing: 0.24em;
         text-transform: uppercase;
         color: #cfa863;
       }
 
-      .muted {
-        color: rgba(233, 224, 207, 0.52);
+      /* --- Photos --------------------------------------------------------- */
+
+      .photos {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+        background: #16150f;
       }
 
-      /* --- Frame ---------------------------------------------------------- */
-
-      .header {
+      .photos img {
         position: absolute;
         top: 0;
         left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        -webkit-transition: opacity 1600ms ease;
+        transition: opacity 1600ms ease;
+        -webkit-transform: scale(1.02);
+        transform: scale(1.02);
+      }
+
+      .photos img.on {
+        opacity: 1;
+        -webkit-animation: drift 14s linear forwards;
+        animation: drift 14s linear forwards;
+      }
+
+      .photos img.on.alt {
+        -webkit-animation-name: drift-alt;
+        animation-name: drift-alt;
+      }
+
+      @-webkit-keyframes drift {
+        from {
+          -webkit-transform: scale(1.02) translate3d(0, 0, 0);
+        }
+        to {
+          -webkit-transform: scale(1.09) translate3d(-1%, -0.6%, 0);
+        }
+      }
+
+      @keyframes drift {
+        from {
+          -webkit-transform: scale(1.02) translate3d(0, 0, 0);
+          transform: scale(1.02) translate3d(0, 0, 0);
+        }
+        to {
+          -webkit-transform: scale(1.09) translate3d(-1%, -0.6%, 0);
+          transform: scale(1.09) translate3d(-1%, -0.6%, 0);
+        }
+      }
+
+      @-webkit-keyframes drift-alt {
+        from {
+          -webkit-transform: scale(1.09) translate3d(1%, 0.5%, 0);
+        }
+        to {
+          -webkit-transform: scale(1.02) translate3d(0, 0, 0);
+        }
+      }
+
+      @keyframes drift-alt {
+        from {
+          -webkit-transform: scale(1.09) translate3d(1%, 0.5%, 0);
+          transform: scale(1.09) translate3d(1%, 0.5%, 0);
+        }
+        to {
+          -webkit-transform: scale(1.02) translate3d(0, 0, 0);
+          transform: scale(1.02) translate3d(0, 0, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .photos img.on {
+          -webkit-animation: none;
+          animation: none;
+        }
+      }
+
+      /* Scrims so the brand, caption and widgets read over any photo. */
+      .scrim {
+        position: fixed;
+        top: 0;
         right: 0;
-        height: 13vh;
-        padding: 4.4vh 6vh 0;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(180deg, rgba(14, 13, 11, 0.72) 0%, rgba(14, 13, 11, 0.3) 18%, rgba(14, 13, 11, 0) 32%),
+          linear-gradient(0deg, rgba(14, 13, 11, 0.75) 0%, rgba(14, 13, 11, 0) 42%);
+      }
+
+      /* --- Top: brand + photo caption ------------------------------------- */
+
+      .top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        padding: 4.4vh 5vh 0;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 18px rgba(0, 0, 0, 0.55);
       }
 
       .brand {
@@ -123,253 +211,110 @@
         color: #cfa863;
       }
 
-      .status {
-        display: flex;
-        align-items: center;
-        font-size: 1.35vh;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: rgba(233, 224, 207, 0.52);
+      .caption {
+        text-align: right;
+        -webkit-transition: opacity 700ms ease;
+        transition: opacity 700ms ease;
       }
 
-      .status .dot {
-        width: 1vh;
-        height: 1vh;
-        margin-right: 1.2vh;
-        border-radius: 50%;
-        background: #cfa863;
-        -webkit-animation: pulse 2.4s ease-in-out infinite;
-        animation: pulse 2.4s ease-in-out infinite;
-      }
-
-      .status.offline .dot {
-        background: rgba(233, 224, 207, 0.3);
-        -webkit-animation: none;
-        animation: none;
-      }
-
-      @-webkit-keyframes pulse {
-        50% {
-          opacity: 0.25;
-        }
-      }
-
-      @keyframes pulse {
-        50% {
-          opacity: 0.25;
-        }
-      }
-
-      .main {
-        position: absolute;
-        top: 13vh;
-        bottom: 10vh;
-        left: 6vh;
-        right: 6vh;
-        display: flex;
-      }
-
-      .left {
-        width: 61%;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .right {
-        flex: 1;
-        margin-left: 4vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .card {
-        position: relative;
-        border: 1px solid rgba(233, 224, 207, 0.14);
-        background: rgba(233, 224, 207, 0.025);
-      }
-
-      /* --- Featured headline ---------------------------------------------- */
-
-      .feature {
-        padding: 4vh 4.4vh 4.4vh;
-        min-height: 33vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-      }
-
-      .feature__meta {
-        display: flex;
-        align-items: center;
-        margin-bottom: 2.2vh;
-      }
-
-      .pill {
-        display: inline-block;
-        padding: 0.6vh 1.3vh;
-        border: 1px solid rgba(207, 168, 99, 0.6);
-        color: #cfa863;
-        font-size: 1.35vh;
-        font-weight: 500;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-      }
-
-      .feature__src {
-        margin-left: 1.8vh;
-        font-size: 1.9vh;
-        color: rgba(233, 224, 207, 0.6);
-      }
-
-      .feature__title {
-        margin: 0;
-        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
-        font-weight: 300;
-        font-size: 5.6vh;
-        line-height: 1.08;
-        color: #f6f1e7;
-        max-height: 3.24em;
-        overflow: hidden;
-      }
-
-      .feature__body {
-        -webkit-transition: opacity 600ms ease;
-        transition: opacity 600ms ease;
-      }
-
-      .feature__body.out {
+      .caption.out {
         opacity: 0;
       }
 
-      .feature__bar {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 2px;
-        background: rgba(233, 224, 207, 0.08);
+      .caption__title {
+        margin-top: 0.8vh;
+        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+        font-weight: 300;
+        font-size: 4.6vh;
+        line-height: 1.05;
+        color: #f6f1e7;
       }
 
-      .feature__bar b {
-        display: block;
-        height: 100%;
-        background: #cfa863;
-        -webkit-transform-origin: left;
-        transform-origin: left;
-        -webkit-transform: scaleX(0);
-        transform: scaleX(0);
+      .caption__line {
+        margin-top: 0.8vh;
+        font-size: 1.9vh;
+        color: rgba(246, 241, 231, 0.82);
       }
 
-      .feature__bar b.run {
-        -webkit-animation: fill 12s linear forwards;
-        animation: fill 12s linear forwards;
-      }
+      /* --- Widget bar ------------------------------------------------------ */
 
-      @-webkit-keyframes fill {
-        to {
-          -webkit-transform: scaleX(1);
-        }
-      }
-
-      @keyframes fill {
-        to {
-          -webkit-transform: scaleX(1);
-          transform: scaleX(1);
-        }
-      }
-
-      /* --- Headline list -------------------------------------------------- */
-
-      .list-head {
+      .bar {
+        position: fixed;
+        left: 2.4vh;
+        right: 2.4vh;
+        bottom: 2.4vh;
+        height: 16.5vh;
         display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        margin: 3.4vh 0 1vh;
+        align-items: stretch;
+        border: 1px solid rgba(233, 224, 207, 0.16);
+        background: rgba(14, 13, 11, 0.8);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
       }
 
-      .news {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        flex: 1;
-        overflow: hidden;
-        border-top: 1px solid rgba(233, 224, 207, 0.14);
-      }
-
-      .news li {
+      .w {
+        position: relative;
         display: flex;
-        align-items: baseline;
-        padding: 1.55vh 0;
-        border-bottom: 1px solid rgba(233, 224, 207, 0.1);
-      }
-
-      .news .tag {
-        flex-shrink: 0;
-        width: 12vh;
-        font-size: 1.3vh;
-        font-weight: 500;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #cfa863;
-      }
-
-      .news .tag.world {
-        color: #9fb7c9;
-      }
-
-      .news .tag.business {
-        color: #b9c79f;
-      }
-
-      .news .t {
-        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 2.8vh;
         min-width: 0;
-        font-size: 2.25vh;
-        color: #e9e0cf;
+      }
+
+      .w + .w {
+        border-left: 1px solid rgba(233, 224, 207, 0.12);
+      }
+
+      .w .label {
+        margin-bottom: 1.2vh;
+      }
+
+      .serif {
+        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+        color: #f6f1e7;
+      }
+
+      .sub {
+        margin-top: 0.8vh;
+        font-size: 1.55vh;
+        color: rgba(233, 224, 207, 0.6);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      .news .when {
+      .sub--wrap {
+        white-space: normal;
+        line-height: 1.35;
+      }
+
+      .sub b {
+        font-weight: 400;
+        color: #e9e0cf;
+      }
+
+      /* clock */
+      .w--clock {
+        width: 17%;
         flex-shrink: 0;
-        margin-left: 2.4vh;
-        font-size: 1.6vh;
-        color: rgba(233, 224, 207, 0.45);
       }
 
-      .empty {
-        padding: 3vh 0;
-        font-size: 2vh;
-        color: rgba(233, 224, 207, 0.45);
-      }
-
-      /* --- Right column ---------------------------------------------------- */
-
-      .hclock {
-        display: flex;
-        align-items: center;
-        margin-top: -0.6vh;
-      }
-
-      .clock__time {
-        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+      .time {
+        font-size: 7.6vh;
         font-weight: 300;
-        font-size: 8.4vh;
         line-height: 0.9;
-        color: #f6f1e7;
-        letter-spacing: -0.01em;
+        white-space: nowrap;
       }
 
-      .clock__time .ampm {
-        margin-left: 0.8vh;
+      .time .ampm {
+        margin-left: 0.6vh;
         font-family: "Inter", Helvetica, Arial, sans-serif;
-        font-size: 2vh;
+        font-size: 1.7vh;
         letter-spacing: 0.14em;
         color: #cfa863;
       }
 
-      .clock__time .colon {
+      .time .colon {
         -webkit-animation: blink 2s steps(1) infinite;
         animation: blink 2s steps(1) infinite;
       }
@@ -386,347 +331,259 @@
         }
       }
 
-      .clock__side {
-        margin-right: 2.6vh;
-        padding-right: 2.6vh;
-        border-right: 1px solid rgba(233, 224, 207, 0.14);
-        text-align: right;
+      /* weather now */
+      .w--wx {
+        width: 15%;
+        flex-shrink: 0;
       }
 
-      .clock__date {
-        font-size: 2vh;
-        color: #e9e0cf;
-      }
-
-      .zones {
-        margin-top: 1vh;
-        font-size: 1.55vh;
-        color: rgba(233, 224, 207, 0.52);
-      }
-
-      .zones span + span {
-        margin-left: 1.8vh;
-      }
-
-      .zones b {
-        font-weight: 400;
-        color: #e9e0cf;
-      }
-
-      .stack > * + * {
-        margin-top: 2vh;
-      }
-
-      .weather {
-        padding: 2.6vh 3.2vh 2.2vh;
-      }
-
-      .weather__now {
+      .wx {
         display: flex;
         align-items: center;
       }
 
-      .weather__icon {
-        width: 7vh;
-        height: 7vh;
-        margin-right: 2vh;
+      .wx svg {
+        width: 5vh;
+        height: 5vh;
+        margin-right: 1.4vh;
         color: #cfa863;
+        flex-shrink: 0;
       }
 
-      .weather__temp {
-        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
-        font-size: 7.4vh;
+      .wx .serif {
+        font-size: 5.6vh;
         line-height: 1;
-        color: #f6f1e7;
       }
 
-      .weather__temp small {
-        margin-left: 0.8vh;
+      .wx small {
+        margin-left: 0.6vh;
         font-family: "Inter", Helvetica, Arial, sans-serif;
-        font-size: 1.8vh;
-        color: rgba(233, 224, 207, 0.52);
+        font-size: 1.5vh;
+        color: rgba(233, 224, 207, 0.6);
       }
 
-      .weather__desc {
-        margin-left: auto;
-        padding-left: 2vh;
-        text-align: right;
-        font-size: 1.9vh;
-        line-height: 1.45;
-        color: #e9e0cf;
-      }
-
-      .weather__desc span {
-        display: block;
-        color: rgba(233, 224, 207, 0.52);
+      /* next hours */
+      .w--hours {
+        width: 15%;
+        flex-shrink: 0;
       }
 
       .hours {
         display: flex;
-        margin-top: 2vh;
-        padding-top: 1.6vh;
-        border-top: 1px solid rgba(233, 224, 207, 0.1);
       }
 
       .hours div {
         flex: 1;
         text-align: center;
-        font-size: 1.5vh;
-        color: rgba(233, 224, 207, 0.52);
+        font-size: 1.35vh;
+        color: rgba(233, 224, 207, 0.6);
       }
 
       .hours svg {
         display: block;
-        width: 3.4vh;
-        height: 3.4vh;
-        margin: 0.8vh auto;
+        width: 3vh;
+        height: 3vh;
+        margin: 0.6vh auto;
         color: #e9e0cf;
       }
 
       .hours b {
         display: block;
         font-weight: 400;
-        font-size: 2.1vh;
+        font-size: 1.9vh;
         color: #f6f1e7;
       }
 
       .hours i {
         display: block;
-        margin-top: 0.3vh;
+        margin-top: 0.2vh;
         font-style: normal;
-        font-size: 1.3vh;
+        font-size: 1.2vh;
         color: #9fb7c9;
       }
 
-      .sunbar {
-        margin-top: 2.2vh;
-      }
-
-      .sunbar__track {
-        position: relative;
-        height: 2px;
-        margin: 1.2vh 0;
-        background: rgba(233, 224, 207, 0.14);
-      }
-
-      .sunbar__fill {
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 0;
-        background: #cfa863;
-      }
-
-      .sunbar__sun {
-        position: absolute;
-        top: -0.7vh;
-        width: 1.6vh;
-        height: 1.6vh;
-        margin-left: -0.8vh;
-        border-radius: 50%;
-        background: #cfa863;
-        box-shadow: 0 0 1.6vh rgba(207, 168, 99, 0.7);
-      }
-
-      .sunbar__ends {
-        display: flex;
-        justify-content: space-between;
-        font-size: 1.5vh;
-        color: rgba(233, 224, 207, 0.52);
-      }
-
-      .sunbar__ends b {
-        font-weight: 400;
-        color: #e9e0cf;
-      }
-
-      .tiles {
-        display: flex;
-      }
-
-      .tile {
+      /* news */
+      .w--news {
         flex: 1;
-        padding: 2.2vh 2.6vh;
       }
 
-      .tile + .tile {
-        margin-left: 2vh;
+      .news {
+        -webkit-transition: opacity 600ms ease;
+        transition: opacity 600ms ease;
       }
 
-      .tile__v {
-        margin-top: 1vh;
-        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
-        font-size: 4.2vh;
-        line-height: 1;
+      .news.out {
+        opacity: 0;
+      }
+
+      .news__title {
+        font-size: 2.5vh;
+        line-height: 1.32;
+        max-height: 2.64em;
+        overflow: hidden;
         color: #f6f1e7;
       }
 
-      .tile__v small {
-        margin-left: 0.4vh;
-        font-family: "Inter", Helvetica, Arial, sans-serif;
-        font-size: 1.5vh;
-        color: rgba(233, 224, 207, 0.52);
+      .news__bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background: rgba(233, 224, 207, 0.06);
       }
 
-      .tile__s {
-        margin-top: 0.8vh;
-        font-size: 1.45vh;
-        color: rgba(233, 224, 207, 0.52);
+      .news__bar b {
+        display: block;
+        height: 100%;
+        background: #cfa863;
+        -webkit-transform-origin: left;
+        transform-origin: left;
+        -webkit-transform: scaleX(0);
+        transform: scaleX(0);
       }
 
-      .fx {
-        padding: 2.2vh 2.6vh;
+      .news__bar b.run {
+        -webkit-animation: fill 10s linear forwards;
+        animation: fill 10s linear forwards;
       }
 
-      .fx__row {
-        display: flex;
+      @-webkit-keyframes fill {
+        to {
+          -webkit-transform: scaleX(1);
+        }
+      }
+
+      @keyframes fill {
+        to {
+          -webkit-transform: scaleX(1);
+          transform: scaleX(1);
+        }
+      }
+
+      /* sea + wind */
+      .w--sea {
+        width: 12%;
+        flex-shrink: 0;
+      }
+
+      .kv + .kv {
         margin-top: 1.2vh;
       }
 
-      .fx__row div {
-        flex: 1;
-      }
-
-      .fx__row div + div {
-        margin-left: 1.6vh;
-        padding-left: 1.6vh;
-        border-left: 1px solid rgba(233, 224, 207, 0.1);
-      }
-
-      .fx__row span {
+      .kv span {
         display: block;
-        font-size: 1.35vh;
-        letter-spacing: 0.16em;
-        color: rgba(233, 224, 207, 0.52);
+        font-size: 1.25vh;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(233, 224, 207, 0.5);
       }
 
-      .fx__row b {
+      .kv b {
         display: block;
-        margin-top: 0.4vh;
-        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+        margin-top: 0.2vh;
         font-weight: 400;
-        font-size: 3.3vh;
+        font-size: 2.1vh;
         color: #f6f1e7;
-      }
-
-      .project {
-        flex: 1;
-        min-height: 10vh;
-        overflow: hidden;
-      }
-
-      .project img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0;
-        -webkit-transition: opacity 1.4s ease;
-        transition: opacity 1.4s ease;
-      }
-
-      .project img.on {
-        opacity: 1;
-      }
-
-      .project__cap {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: 6vh 2.6vh 2vh;
-        background: linear-gradient(0deg, rgba(14, 13, 11, 0.96) 35%, rgba(14, 13, 11, 0));
-        font-size: 1.8vh;
-        color: #f6f1e7;
-      }
-
-      .project__cap .label {
-        display: block;
-        margin-bottom: 0.6vh;
-      }
-
-      /* --- Ticker ---------------------------------------------------------- */
-
-      .ticker {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 7vh;
-        display: flex;
-        align-items: center;
-        border-top: 1px solid rgba(233, 224, 207, 0.14);
-        background: rgba(14, 13, 11, 0.85);
-        overflow: hidden;
-      }
-
-      .ticker__label {
-        position: relative;
-        z-index: 1;
-        flex-shrink: 0;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        padding: 0 3vh 0 6vh;
-        background: #0e0d0b;
-        box-shadow: 2vh 0 2vh #0e0d0b;
-      }
-
-      .ticker__lane {
-        flex: 1;
-        overflow: hidden;
         white-space: nowrap;
       }
 
-      .ticker__run {
-        display: inline-block;
-        padding-left: 100%;
-        font-size: 2.1vh;
-        color: #e9e0cf;
-        -webkit-animation: scroll 120s linear infinite;
-        animation: scroll 120s linear infinite;
+      /* fx */
+      .w--fx {
+        width: 11%;
+        flex-shrink: 0;
       }
 
-      .ticker__run em {
-        font-style: normal;
-        margin: 0 2.6vh;
-        color: #cfa863;
+      .fx div {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.85vh;
+        line-height: 1.6;
       }
 
-      @-webkit-keyframes scroll {
-        from {
-          -webkit-transform: translate3d(0, 0, 0);
-        }
+      .fx span {
+        color: rgba(233, 224, 207, 0.55);
+      }
+
+      .fx b {
+        font-weight: 400;
+        color: #f6f1e7;
+      }
+
+      /* --- Loading screen --------------------------------------------------- */
+
+      .loader {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #0e0d0b;
+        -webkit-transition: opacity 900ms ease;
+        transition: opacity 900ms ease;
+        /* If scripting fails entirely, never leave the loader up for good. */
+        -webkit-animation: loader-giveup 0s linear 40s forwards;
+        animation: loader-giveup 0s linear 40s forwards;
+      }
+
+      @-webkit-keyframes loader-giveup {
         to {
-          -webkit-transform: translate3d(-100%, 0, 0);
+          opacity: 0;
+          visibility: hidden;
         }
       }
 
-      @keyframes scroll {
-        from {
-          -webkit-transform: translate3d(0, 0, 0);
-          transform: translate3d(0, 0, 0);
-        }
+      @keyframes loader-giveup {
         to {
-          -webkit-transform: translate3d(-100%, 0, 0);
-          transform: translate3d(-100%, 0, 0);
+          opacity: 0;
+          visibility: hidden;
         }
       }
 
-      @media (prefers-reduced-motion: reduce) {
-        .ticker__run,
-        .feature__bar b.run {
-          -webkit-animation: none;
-          animation: none;
-        }
+      .loader.done {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loader svg {
+        width: 10vh;
+        height: 10vh;
+      }
+
+      .loader__track {
+        width: 30vh;
+        height: 2px;
+        margin-top: 4vh;
+        background: rgba(233, 224, 207, 0.14);
+      }
+
+      .loader__fill {
+        width: 0;
+        height: 100%;
+        background: #cfa863;
+        -webkit-transition: width 300ms ease;
+        transition: width 300ms ease;
+      }
+
+      .loader__text {
+        margin-top: 2vh;
+        font-size: 1.5vh;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(233, 224, 207, 0.55);
       }
     </style>
   </head>
   <body>
-    <header class="header">
+    <div class="photos" id="photos"></div>
+    <div class="scrim"></div>
+
+    <header class="top">
       <div class="brand">
         <svg viewBox="0 0 64 64" aria-hidden="true">
           <g fill="none" stroke="#cfa863" stroke-width="2.6" stroke-linecap="square">
@@ -735,100 +592,98 @@
             <path d="M6 52h52" />
           </g>
         </svg>
-        <div><b>Casabella</b><small>Aruba · Live</small></div>
+        <div><b>Casabella</b><small>Aruba</small></div>
       </div>
-      <div class="hclock">
-        <div class="clock__side">
-          <div class="clock__date" id="date"></div>
-          <div class="zones" id="zones"></div>
-        </div>
-        <div class="clock__time" id="time"></div>
+      <div class="caption" id="caption">
+        <div class="label" id="c-label"></div>
+        <div class="caption__title" id="c-title"></div>
+        <div class="caption__line" id="c-line"></div>
       </div>
     </header>
 
-    <main class="main">
-      <section class="left">
-        <article class="card feature">
-          <div class="feature__body" id="feature">
-            <div class="feature__meta">
-              <span class="pill" id="f-label">News</span>
-              <span class="feature__src" id="f-src"></span>
-            </div>
-            <h1 class="feature__title" id="f-title">Loading the latest headlines…</h1>
-          </div>
-          <div class="feature__bar"><b id="f-bar"></b></div>
-        </article>
+    <footer class="bar">
+      <div class="w w--clock">
+        <div class="time serif" id="time"></div>
+        <div class="sub" id="date"></div>
+        <div class="sub" id="zones"></div>
+      </div>
 
-        <div class="list-head">
-          <span class="label">Up next</span>
-          <div class="status offline" id="status"><span class="dot"></span><span id="status-text">Connecting</span></div>
+      <div class="w w--wx">
+        <div class="label">Aruba</div>
+        <div class="wx">
+          <svg id="w-icon" viewBox="0 0 24 24"></svg>
+          <div class="serif" id="w-temp">—</div>
         </div>
-        <ul class="news" id="news"></ul>
-      </section>
+        <div class="sub sub--wrap" id="w-desc">Loading weather…</div>
+      </div>
 
-      <aside class="right stack">
-        <div class="card weather" id="weather">
-          <div class="weather__now">
-            <svg class="weather__icon" id="w-icon" viewBox="0 0 24 24"></svg>
-            <div class="weather__temp" id="w-temp">—</div>
-            <div class="weather__desc" id="w-desc">Aruba weather<span>Loading…</span></div>
-          </div>
-          <div class="hours" id="hours"></div>
-          <div class="sunbar" id="sunbar" style="visibility: hidden">
-            <div class="sunbar__track">
-              <div class="sunbar__fill" id="sun-fill"></div>
-              <div class="sunbar__sun" id="sun-dot"></div>
-            </div>
-            <div class="sunbar__ends">
-              <span>Sunrise <b id="sunrise">—</b></span>
-              <span id="daylight"></span>
-              <span>Sunset <b id="sunset">—</b></span>
-            </div>
-          </div>
+      <div class="w w--hours">
+        <div class="label">Next hours</div>
+        <div class="hours" id="hours"></div>
+      </div>
+
+      <div class="w w--news">
+        <div class="news" id="news">
+          <div class="label" id="n-label">News</div>
+          <div class="news__title" id="n-title">Loading the latest headlines…</div>
         </div>
+        <div class="news__bar"><b id="n-bar"></b></div>
+      </div>
 
-        <div class="tiles">
-          <div class="card tile">
-            <div class="label">Sea · Palm Beach</div>
-            <div class="tile__v" id="sea-t">—</div>
-            <div class="tile__s" id="sea-s">Water temperature</div>
-          </div>
-          <div class="card tile">
-            <div class="label">Trade wind</div>
-            <div class="tile__v" id="wind-v">—</div>
-            <div class="tile__s" id="wind-s">From the east</div>
-          </div>
+      <div class="w w--sea">
+        <div class="kv"><span>Sea</span><b id="sea">—</b></div>
+        <div class="kv"><span>Wind</span><b id="wind">—</b></div>
+      </div>
+
+      <div class="w w--fx">
+        <div class="label">US $1</div>
+        <div class="fx">
+          <div><span>AWG</span><b>ƒ1.79</b></div>
+          <div><span>EUR</span><b id="fx-EUR">—</b></div>
+          <div><span>GBP</span><b id="fx-GBP">—</b></div>
         </div>
-
-        <div class="card fx">
-          <div class="label">One US dollar</div>
-          <div class="fx__row" id="fx">
-            <div><span>AWG</span><b>ƒ1.79</b></div>
-            <div><span>EUR</span><b id="fx-EUR">—</b></div>
-            <div><span>GBP</span><b id="fx-GBP">—</b></div>
-            <div><span>CAD</span><b id="fx-CAD">—</b></div>
-          </div>
-        </div>
-
-        <div class="card project" id="project">
-          <img class="on" src="/tower/assets/img/hero@1280.jpg" alt="" />
-          <img src="/suites/assets/img/hero@1280.jpg" alt="" />
-          <div class="project__cap" id="project-cap">
-            <span class="label">Now selling · Palm Beach</span>Casabella Tower — from $591,225
-          </div>
-        </div>
-      </aside>
-    </main>
-
-    <footer class="ticker">
-      <div class="ticker__label label">Headlines</div>
-      <div class="ticker__lane"><div class="ticker__run" id="ticker">Casabella Aruba<em>•</em>casabellaaruba.com</div></div>
+      </div>
     </footer>
+
+    <div class="loader" id="loader">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <g fill="none" stroke="#cfa863" stroke-width="1.8" stroke-linecap="square">
+          <path d="M10 52V34l10-8 10 8v18" />
+          <path d="M36 52V20l9-7 9 7v32" />
+          <path d="M6 52h52" />
+        </g>
+      </svg>
+      <div class="loader__track"><div class="loader__fill" id="load-fill"></div></div>
+      <div class="loader__text" id="load-text">Loading photos</div>
+    </div>
 
     <script>
       /* Plain ES5 with XHR, like /tv/, so older smart-TV browsers run it. */
       (function () {
         "use strict";
+
+        // Landscape photos only; each fills the screen. Copy is from the
+        // Tower and Suites pages.
+        var PHOTOS = [
+          ["/tower/assets/img/hero.jpg", "Casabella Tower · Palm Beach", "Ocean-view residences", "Now selling — pre-construction from $591,225"],
+          ["/suites/assets/img/hero.jpg", "Casabella Suites · San Nicolas", "Eight suites that run on sunlight", "A pool, a barbecue and a private backyard behind every door"],
+          ["/tower/assets/img/gallery/01-west-elevation.jpg", "Casabella Tower", "Deliberately quiet", "Deep planted balconies shade the glass through the afternoon"],
+          ["/suites/assets/img/pool.jpg", "Casabella Suites", "A pool shared by eight suites", "Not eight hundred"],
+          ["/tower/assets/img/gallery/04-rooftop-terrace.jpg", "Casabella Tower", "The roof terrace", "More than 145 m², facing west into the sunset"],
+          ["/suites/assets/img/living.jpg", "Casabella Suites", "Two layouts, eight suites", "Every suite has its own kitchen, bathroom and backyard"],
+          ["/suites/assets/img/solar.jpg", "Casabella Suites", "Every kilowatt from its own roof", "The suites, the air conditioning and the pool pump"],
+          ["/suites/assets/img/building.jpg", "Casabella Suites", "Small on purpose", "Four suites either side of a shaded walkway"],
+          ["/suites/assets/img/bedroom.jpg", "Casabella Suites", "One- and two-bedroom suites", "Six one-bedroom, two two-bedroom"],
+          ["/assets/img/about.jpg", "Casabella Aruba", "A family name on every building", "Family owned, building where it lives"],
+          ["/suites/assets/img/location.jpg", "San Nicolas", "The half of Aruba most visitors never see", "Street murals, old bars and a coastline without resorts"],
+          ["/suites/assets/img/kitchen.jpg", "Casabella Suites", "A full kitchen in every suite", "Built to be let by the night"],
+        ];
+
+        var PHOTO_MS = 14000;
+        var NEWS_MS = 10000;
+        // Never hold the screen on the loader longer than this, even if one
+        // photo will not load.
+        var LOAD_LIMIT_MS = 30000;
 
         function param(name) {
           var m = new RegExp("[?&]" + name + "=([^&]*)").exec(location.search);
@@ -837,10 +692,6 @@
 
         function $(id) {
           return document.getElementById(id);
-        }
-
-        function each(list, fn) {
-          Array.prototype.forEach.call(list, fn);
         }
 
         function pad(n) {
@@ -853,6 +704,12 @@
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
+        }
+
+        function safely(fn) {
+          try {
+            fn();
+          } catch (e) {}
         }
 
         function getJSON(url, done, fail) {
@@ -874,23 +731,104 @@
           x.send();
         }
 
-        function safely(fn) {
-          try {
-            fn();
-          } catch (e) {}
+        var H12 = param("h24") !== "1";
+
+        /* --- Photos: load everything, then start ------------------------- */
+
+        var imgs = [];
+        var shown = -1;
+        var photoTimer = null;
+
+        function preload(done) {
+          var box = $("photos");
+          var left = PHOTOS.length;
+          var finished = false;
+
+          function finish() {
+            if (finished) return;
+            finished = true;
+            // Only keep the photos that actually arrived.
+            imgs = imgs.filter(function (img) {
+              return img.ok;
+            });
+            done();
+          }
+
+          function settle(img, ok) {
+            if (img.settled) return;
+            img.settled = true;
+            img.ok = ok;
+            left--;
+            var n = PHOTOS.length - left;
+            $("load-fill").style.width = (n / PHOTOS.length) * 100 + "%";
+            $("load-text").textContent = "Loading photos " + n + " / " + PHOTOS.length;
+            if (left === 0) finish();
+          }
+
+          PHOTOS.forEach(function (p) {
+            var img = new Image();
+            img.alt = "";
+            img.photo = p;
+            img.onload = function () {
+              // Decode now, off screen, so the first time it shows is instant.
+              if (img.decode) {
+                img.decode().then(
+                  function () { settle(img, true); },
+                  function () { settle(img, true); }
+                );
+              } else {
+                settle(img, true);
+              }
+            };
+            img.onerror = function () {
+              settle(img, false);
+            };
+            img.src = p[0];
+            box.appendChild(img);
+            imgs.push(img);
+          });
+
+          setTimeout(function () {
+            // Anything still loading by now is treated as missing.
+            imgs.forEach(function (img) {
+              if (!img.settled) settle(img, img.complete && img.naturalWidth > 0);
+            });
+            finish();
+          }, LOAD_LIMIT_MS);
         }
 
-        var H12 = param("h24") !== "1";
-        var LAT = 12.52;
-        var LON = -70.03;
-        // Just off Palm Beach, for sea conditions.
-        var SEA_LAT = 12.57;
-        var SEA_LON = -70.07;
+        function showPhoto(step) {
+          if (!imgs.length) return;
+          var next = (shown + step + imgs.length) % imgs.length;
+          if (shown >= 0) imgs[shown].className = "";
+          var img = imgs[next];
+          img.className = next % 2 ? "on alt" : "on";
+          var dur = PHOTO_MS + 1600 + "ms";
+          img.style.webkitAnimationDuration = dur;
+          img.style.animationDuration = dur;
+          shown = next;
 
-        /* --- Aruba time -------------------------------------------------- */
+          var cap = $("caption");
+          cap.className = "caption out";
+          setTimeout(function () {
+            $("c-label").textContent = img.photo[1];
+            $("c-title").textContent = img.photo[2];
+            $("c-line").textContent = img.photo[3];
+            cap.className = "caption";
+          }, 650);
 
-        // Aruba is UTC−4 all year (no daylight saving), so its clock needs no
-        // time-zone database — which some TV browsers lack.
+          clearTimeout(photoTimer);
+          photoTimer = setTimeout(function () {
+            showPhoto(1);
+          }, PHOTO_MS);
+        }
+
+        /* --- Clock (Aruba is UTC−4 all year, no time-zone data needed) --- */
+
+        var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+          "August", "September", "October", "November", "December"];
+
         function aruba() {
           var d = new Date(Date.now() - 4 * 3600 * 1000);
           return {
@@ -907,10 +845,6 @@
           if (!H12) return pad(h) + ":" + pad(mi);
           return (h % 12 || 12) + ":" + pad(mi) + " " + (h < 12 ? "AM" : "PM");
         }
-
-        var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        var MONTHS = ["January", "February", "March", "April", "May", "June", "July",
-          "August", "September", "October", "November", "December"];
 
         var zonesOk = (function () {
           try {
@@ -942,12 +876,9 @@
             (H12 ? '<span class="ampm">' + (t.h < 12 ? "AM" : "PM") + "</span>" : "");
           $("date").textContent = DAYS[t.wd] + ", " + MONTHS[t.mo] + " " + t.d;
           $("zones").innerHTML = zonesOk
-            ? "<span>New York <b>" + zoneTime("America/New_York") + "</b></span>" +
-              "<span>Amsterdam <b>" + zoneTime("Europe/Amsterdam") + "</b></span>"
+            ? "NY <b>" + zoneTime("America/New_York") + "</b> · AMS <b>" + zoneTime("Europe/Amsterdam") + "</b>"
             : "";
-          safely(updateSun);
           safely(renderHours);
-          safely(renderAges);
           maybeReload(t);
         }
 
@@ -955,50 +886,30 @@
 
         var stories = [];
         var current = -1;
-        var featureTimer = null;
-        var FEATURE_MS = 12000;
-        var lastNewsOk = 0;
+        var newsTimer = null;
 
         function ago(ms) {
           if (!ms) return "";
           var min = Math.round((Date.now() - ms) / 60000);
-          if (min < 1) return "Just now";
+          if (min < 1) return "just now";
           if (min < 60) return min + " min ago";
           var h = Math.round(min / 60);
           if (h < 24) return h + " h ago";
           var d = Math.round(h / 24);
-          return d === 1 ? "Yesterday" : d + " days ago";
+          return d === 1 ? "yesterday" : d + " days ago";
         }
 
-        // Interleave the feeds so the screen alternates Aruba with the world
-        // instead of showing ten Aruba stories in a row.
+        // Two Aruba stories for every world and business one.
         function interleave(news) {
-          var lists = [news.aruba || [], news.world || [], news.business || []];
-          var out = [];
+          var lists = [(news.aruba || []).slice(), (news.world || []).slice(), (news.business || []).slice()];
           var weights = [2, 1, 1];
-          var i = 0;
-          while (lists[0].length || lists[1].length || lists[2].length) {
+          var out = [];
+          for (var guard = 0; guard < 50 && (lists[0].length || lists[1].length || lists[2].length); guard++) {
             for (var k = 0; k < lists.length; k++) {
               for (var w = 0; w < weights[k] && lists[k].length; w++) out.push(lists[k].shift());
             }
-            if (++i > 50) break;
           }
           return out;
-        }
-
-        function setStatus(ok) {
-          var el = $("status");
-          if (ok) el.className = "status";
-          else el.className = "status offline";
-        }
-
-        function renderStatus() {
-          if (!lastNewsOk) {
-            $("status-text").textContent = "Connecting";
-            return;
-          }
-          var min = Math.round((Date.now() - lastNewsOk) / 60000);
-          $("status-text").textContent = min < 1 ? "Live · updated just now" : "Live · updated " + min + " min ago";
         }
 
         function loadNews() {
@@ -1007,104 +918,57 @@
             function (data) {
               var list = interleave(data.news || {});
               if (list.length) {
-                var keep = stories.length && stories[current] ? stories[current].title : null;
+                var keep = stories[current] ? stories[current].title : null;
                 stories = list;
-                // Stay on the same story if it is still in the new list.
                 current = -1;
                 for (var i = 0; keep && i < stories.length; i++) {
                   if (stories[i].title === keep) current = i;
                 }
-                lastNewsOk = Date.now();
-                setStatus(true);
-                renderTicker();
-                if (current < 0) advance(1);
-                else renderList();
+                if (current < 0) showNews(1);
               } else if (!stories.length) {
-                showNoNews();
+                noNews();
               }
               renderMarkets(data.markets);
-              renderStatus();
             },
             function () {
-              setStatus(false);
-              if (!stories.length) showNoNews();
-              renderStatus();
+              if (!stories.length) noNews();
             }
           );
         }
 
-        function showNoNews() {
-          $("f-label").textContent = "News";
-          $("f-src").textContent = "";
-          $("f-title").textContent = "Headlines will appear when the connection returns.";
-          $("news").innerHTML = "";
+        function noNews() {
+          $("n-label").textContent = "News";
+          $("n-title").textContent = "Headlines will appear when the connection returns.";
         }
 
-        function advance(step) {
+        function showNews(step) {
           if (!stories.length) return;
           current = (current + step + stories.length) % stories.length;
           var s = stories[current];
-          var body = $("feature");
-          body.className = "feature__body out";
+          var box = $("news");
+          box.className = "news out";
           setTimeout(function () {
-            $("f-label").textContent = s.label;
-            $("f-src").textContent = [s.source, ago(s.time)].filter(Boolean).join(" · ");
-            $("f-title").textContent = s.title;
-            body.className = "feature__body";
+            $("n-label").textContent = [s.label, s.source, ago(s.time)].filter(Boolean).join(" · ");
+            $("n-title").textContent = s.title;
+            box.className = "news";
           }, 450);
 
-          var bar = $("f-bar");
+          var bar = $("n-bar");
           bar.className = "";
           void bar.offsetWidth;
           bar.className = "run";
 
-          renderList();
-          clearTimeout(featureTimer);
-          featureTimer = setTimeout(function () {
-            advance(1);
-          }, FEATURE_MS);
+          clearTimeout(newsTimer);
+          newsTimer = setTimeout(function () {
+            showNews(1);
+          }, NEWS_MS);
         }
-
-        var ROWS = 8;
-
-        function renderList() {
-          var html = "";
-          for (var i = 1; i <= Math.min(ROWS, stories.length - 1); i++) {
-            var s = stories[(current + i) % stories.length];
-            html +=
-              '<li><span class="tag ' + esc(s.feed) + '">' + esc(s.label) + "</span>" +
-              '<span class="t">' + esc(s.title) + "</span>" +
-              '<span class="when" data-t="' + (s.time || "") + '">' + esc(ago(s.time)) + "</span></li>";
-          }
-          $("news").innerHTML = html;
-        }
-
-        function renderAges() {
-          each(document.querySelectorAll("#news .when"), function (el) {
-            el.textContent = ago(+el.getAttribute("data-t"));
-          });
-          renderStatus();
-        }
-
-        function renderTicker() {
-          var parts = [];
-          for (var i = 0; i < stories.length; i++) parts.push(esc(stories[i].title));
-          var run = $("ticker");
-          run.innerHTML = parts.join("<em>•</em>");
-          // A steady reading speed whatever the number of headlines.
-          var secs = Math.max(60, Math.round(run.textContent.length / 9));
-          run.style.webkitAnimationDuration = secs + "s";
-          run.style.animationDuration = secs + "s";
-        }
-
-        /* --- Markets ----------------------------------------------------- */
 
         function renderMarkets(m) {
           if (!m || !m.rates) return;
-          ["EUR", "GBP", "CAD"].forEach(function (k) {
-            var v = m.rates[k];
-            var sym = { EUR: "€", GBP: "£", CAD: "C$" }[k];
-            if (typeof v === "number") $("fx-" + k).textContent = sym + v.toFixed(3);
+          var sym = { EUR: "€", GBP: "£" };
+          ["EUR", "GBP"].forEach(function (k) {
+            if (typeof m.rates[k] === "number") $("fx-" + k).textContent = sym[k] + m.rates[k].toFixed(3);
           });
         }
 
@@ -1138,28 +1002,21 @@
           return ["Thunderstorms", "storm"];
         }
 
-        var COMPASS = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
-
+        var COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
         var wx = null;
 
-        // "2026-10-08T18:32" → minutes since Aruba midnight (the API returns
-        // Aruba wall time because we ask for timezone=America/Aruba).
-        function minsOf(iso) {
-          var t = iso.split("T")[1].split(":");
-          return +t[0] * 60 + +t[1];
-        }
-
+        // Open-Meteo returns Aruba wall time because we ask for it.
         function hmIso(iso) {
-          var m = minsOf(iso);
-          return fmtHM(Math.floor(m / 60), m % 60);
+          var t = iso.split("T")[1].split(":");
+          return fmtHM(+t[0], +t[1]);
         }
 
         function loadWeather() {
           getJSON(
-            "https://api.open-meteo.com/v1/forecast?latitude=" + LAT + "&longitude=" + LON +
-              "&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day,relative_humidity_2m" +
+            "https://api.open-meteo.com/v1/forecast?latitude=12.52&longitude=-70.03" +
+              "&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,is_day" +
               "&hourly=temperature_2m,weather_code,precipitation_probability,is_day" +
-              "&daily=sunrise,sunset,temperature_2m_max,uv_index_max" +
+              "&daily=sunrise,sunset,temperature_2m_max" +
               "&timezone=America%2FAruba&forecast_days=2",
             function (d) {
               wx = d;
@@ -1167,46 +1024,34 @@
               var desc = describe(c.weather_code, c.is_day === 1);
               var f = Math.round(c.temperature_2m * 9 / 5 + 32);
               $("w-icon").innerHTML = icon(desc[1]);
-              $("w-temp").innerHTML = Math.round(c.temperature_2m) + "°<small>C · " + f + "°F</small>";
+              $("w-temp").innerHTML = Math.round(c.temperature_2m) + "°<small>" + f + "°F</small>";
               $("w-desc").innerHTML =
-                esc(desc[0]) +
-                "<span>High " + Math.round(d.daily.temperature_2m_max[0]) + "°" +
-                (d.daily.uv_index_max ? " · UV " + Math.round(d.daily.uv_index_max[0]) : "") +
-                "</span><span>Humidity " + Math.round(c.relative_humidity_2m) + "%</span>";
-
-              $("wind-v").innerHTML = Math.round(c.wind_speed_10m) + "<small>km/h</small>";
-              var dir = COMPASS[Math.round(((c.wind_direction_10m % 360) / 45)) % 8];
-              $("wind-s").textContent = "From the " + dir + " · gusts " + Math.round(c.wind_gusts_10m) + " km/h";
-
-              $("sunrise").textContent = hmIso(d.daily.sunrise[0]);
-              $("sunset").textContent = hmIso(d.daily.sunset[0]);
+                esc(desc[0]) + "<br />" +
+                (c.is_day === 1 ? "Sunset <b>" + hmIso(d.daily.sunset[0]) + "</b>"
+                                : "High <b>" + Math.round(d.daily.temperature_2m_max[0]) + "°</b>");
+              var dir = COMPASS[Math.round((c.wind_direction_10m % 360) / 45) % 8];
+              $("wind").textContent = Math.round(c.wind_speed_10m) + " km/h " + dir;
               renderHours();
-              updateSun();
-              $("sunbar").style.visibility = "visible";
             },
             function () {
-              // Keep the last good reading; only say so if there never was one.
-              if (!wx) $("w-desc").innerHTML = "Aruba weather<span>Unavailable right now</span>";
+              if (!wx) $("w-desc").textContent = "Weather unavailable";
             }
           );
 
           getJSON(
-            "https://marine-api.open-meteo.com/v1/marine?latitude=" + SEA_LAT + "&longitude=" + SEA_LON +
+            "https://marine-api.open-meteo.com/v1/marine?latitude=12.57&longitude=-70.07" +
               "&current=sea_surface_temperature,wave_height&timezone=America%2FAruba",
             function (d) {
               var c = d.current || {};
-              if (typeof c.sea_surface_temperature === "number") {
-                var f = Math.round(c.sea_surface_temperature * 9 / 5 + 32);
-                $("sea-t").innerHTML = Math.round(c.sea_surface_temperature) + "°<small>C · " + f + "°F</small>";
-              }
-              if (typeof c.wave_height === "number") {
-                $("sea-s").textContent = "Waves " + c.wave_height.toFixed(1) + " m";
-              }
+              var parts = [];
+              if (typeof c.sea_surface_temperature === "number") parts.push(Math.round(c.sea_surface_temperature) + "°C");
+              if (typeof c.wave_height === "number") parts.push(c.wave_height.toFixed(1) + " m");
+              if (parts.length) $("sea").textContent = parts.join(" · ");
             }
           );
         }
 
-        // The next six hours, starting from the coming hour.
+        // The next three hours, from the coming hour.
         function renderHours() {
           if (!wx || !wx.hourly) return;
           var t = aruba();
@@ -1221,7 +1066,7 @@
           }
           if (start < 0) return;
           var html = "";
-          for (var j = start; j < Math.min(start + 6, times.length); j++) {
+          for (var j = start; j < Math.min(start + 3, times.length); j++) {
             var h = +times[j].slice(11, 13);
             var desc = describe(wx.hourly.weather_code[j], wx.hourly.is_day[j] === 1);
             var rain = wx.hourly.precipitation_probability[j];
@@ -1232,38 +1077,6 @@
               "<i>" + (rain >= 20 ? rain + "% rain" : "&nbsp;") + "</i></div>";
           }
           $("hours").innerHTML = html;
-        }
-
-        function updateSun() {
-          if (!wx || !wx.daily) return;
-          var t = aruba();
-          var now = t.h * 60 + t.mi;
-          var rise = minsOf(wx.daily.sunrise[0]);
-          var set = minsOf(wx.daily.sunset[0]);
-          var p = Math.max(0, Math.min(1, (now - rise) / (set - rise)));
-          $("sun-fill").style.width = p * 100 + "%";
-          $("sun-dot").style.left = p * 100 + "%";
-          var left = set - now;
-          $("daylight").textContent =
-            now < rise ? "Before sunrise" :
-            left > 0 ? Math.floor(left / 60) + "h " + (left % 60) + "m of daylight left" :
-            "After sunset";
-        }
-
-        /* --- Project card ------------------------------------------------ */
-
-        var CAPTIONS = [
-          '<span class="label">Now selling · Palm Beach</span>Casabella Tower — from $591,225',
-          '<span class="label">Open now · San Nicolas</span>Casabella Suites — eight suites on solar',
-        ];
-        var shown = 0;
-
-        function swapProject() {
-          var imgs = $("project").getElementsByTagName("img");
-          imgs[shown].className = "";
-          shown = (shown + 1) % imgs.length;
-          imgs[shown].className = "on";
-          $("project-cap").innerHTML = CAPTIONS[shown];
         }
 
         /* --- Housekeeping ------------------------------------------------ */
@@ -1308,8 +1121,8 @@
         function onKey(e) {
           var k = e.key || "";
           var c = e.keyCode;
-          if (k === "ArrowRight" || c === 39) advance(1);
-          else if (k === "ArrowLeft" || c === 37) advance(-1);
+          if (k === "ArrowRight" || c === 39) showPhoto(1);
+          else if (k === "ArrowLeft" || c === 37) showPhoto(-1);
           else if (k === "f" || k === "F" || c === 70) fullscreen();
           else return;
           e.preventDefault();
@@ -1317,6 +1130,8 @@
 
         /* --- Go ---------------------------------------------------------- */
 
+        // Widgets start straight away, behind the loader; photos start once
+        // every one of them is in memory.
         safely(function () {
           tick();
           setInterval(function () {
@@ -1336,7 +1151,12 @@
           }, 15 * 60 * 1000);
         });
         safely(function () {
-          setInterval(swapProject, 20000);
+          preload(function () {
+            safely(function () {
+              showPhoto(1);
+            });
+            $("loader").className = "loader done";
+          });
         });
         safely(function () {
           document.addEventListener("mousemove", active);

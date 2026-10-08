@@ -90,18 +90,23 @@ To add or change a slide, edit the `<section class="slide">` blocks in
 
 ### Live dashboard
 
-`/tv/live/` is the non-slideshow alternative: one fixed screen that updates in
-place. Headlines (Aruba from Google News, world and business from the BBC)
-rotate through a featured slot every 12 seconds above an "up next" list and a
-scrolling ticker; alongside sit the clock, Aruba weather with the next six
-hours and the sun's progress, sea temperature and waves off Palm Beach, the
-trade wind, and USD exchange rates (EUR/GBP/CAD from the European Central
-Bank; AWG is the fixed 1.79 peg).
+`/tv/live/` puts the photography first: Tower and Suites photos fill the
+screen, crossfading every 14 seconds with a caption, over a bar of live
+widgets along the bottom — clock, Aruba weather, the next three hours, a
+rotating headline (Aruba from Google News, world and business from the BBC),
+sea temperature, waves and wind, and USD exchange rates (EUR/GBP from the
+European Central Bank; AWG is the fixed 1.79 peg). To add a photo, add a line
+to `PHOTOS` in the page's script — landscape images only.
 
 Browsers cannot read news feeds from other sites, so `functions/api/live.js`
 fetches and trims them server-side and caches the result for five minutes.
 Weather comes straight from Open-Meteo, as on `/tv/`. Any source that is down
-leaves its panel showing a quiet message instead of breaking the page.
+leaves its widget showing a quiet message instead of breaking the page.
+
+Both TV pages open on a short loading screen that downloads and decodes every
+photo before the first one shows, so changing photos never stalls on a slow
+TV. It gives up waiting after 30 seconds, so one missing photo cannot hold
+the screen.
 
 ## Single-file preview
 
