@@ -74,7 +74,7 @@ the shared Cloudflare Function at `/api/enquiry`.
 
 `/tv/` is a self-running slideshow for the TV in the office: Tower and Suites
 photos with copy from their pages, plus a clock (Aruba time, with New York and
-Amsterdam underneath), live Aruba weather and sunset from
+India underneath), live Aruba weather and sunset from
 [Open-Meteo](https://open-meteo.com) (free, no key). One file, everything
 inline, `noindex` and disallowed in `robots.txt`.
 
