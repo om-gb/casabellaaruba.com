@@ -570,6 +570,103 @@
         font-size: 2.2vh;
       }
 
+      /* Three photos: the copy panel takes the whole bottom-right. */
+      .slide--grid.three .panel {
+        left: 40.6%;
+        left: calc(40.3% + 0.6vh);
+        width: 59.7%;
+        width: calc(59.7% - 0.6vh);
+      }
+
+      .slide--grid.three .fineprint {
+        margin-top: 2vh;
+      }
+
+      /* "Artist impression" on rendered imagery. */
+      .render-note {
+        position: absolute;
+        right: 6vh;
+        bottom: 9vh;
+        z-index: 2;
+        font-size: 1.3vh;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(233, 224, 207, 0.6);
+      }
+
+      /* --- Opening slide: the three projects ------------------------------ */
+
+      .slide--intro {
+        background:
+          radial-gradient(70% 90% at 85% 10%, rgba(207, 168, 99, 0.12), transparent 60%),
+          radial-gradient(60% 70% at 0% 100%, rgba(207, 168, 99, 0.06), transparent 60%),
+          #0e0d0b;
+      }
+
+      .slide--intro .panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: none;
+        padding-left: 6vh;
+        padding-right: 6vh;
+      }
+
+      .slide--intro .title {
+        font-size: 8.4vh;
+      }
+
+      .projects {
+        display: flex;
+        margin-top: 6vh;
+        border-top: 1px solid rgba(233, 224, 207, 0.3);
+      }
+
+      .proj {
+        flex: 1;
+        padding: 3.4vh 3vh 0 0;
+      }
+
+      .proj + .proj {
+        padding-left: 3vh;
+        border-left: 1px solid rgba(233, 224, 207, 0.16);
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.6vh 1.3vh;
+        border: 1px solid rgba(207, 168, 99, 0.6);
+        color: #cfa863;
+        font-size: 1.35vh;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .proj__name {
+        margin: 2.2vh 0 0;
+        font-family: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+        font-size: 4.6vh;
+        line-height: 1.05;
+        color: #f6f1e7;
+      }
+
+      .proj__place {
+        margin: 0.8vh 0 0;
+        font-size: 1.5vh;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(233, 224, 207, 0.52);
+      }
+
+      .proj__line {
+        margin: 1.6vh 0 0;
+        font-size: 2.3vh;
+        color: rgba(233, 224, 207, 0.74);
+      }
+
       /* --- Closing card --------------------------------------------------- */
 
       .slide--close {
@@ -1000,19 +1097,36 @@
   </head>
   <body>
     <main class="stage" id="stage">
+      <!-- Four chapters, each photo used once: Casabella, Tower, Suites, City.
+           The first slide is visible in the markup so something shows even
+           if scripting fails. -->
+
       <!-- ============ Casabella Aruba ============ -->
 
-      <section class="slide slide--full is-active" data-project="Casabella Aruba">
-        <div class="media">
-          <img src="/assets/img/hero.jpg" alt="" />
-        </div>
-        <div class="copy">
-          <p class="eyebrow">Property development · Aruba</p>
+      <section class="slide slide--intro is-active" data-project="Casabella Aruba" data-seconds="12">
+        <div class="panel">
+          <p class="eyebrow">Family owned · Aruba</p>
           <h1 class="title">A family name on <em>every</em> building.</h1>
-          <p class="lede">
-            A family-owned developer in Aruba. A small portfolio, built for the
-            heat and designed to run on the island's own sunlight.
-          </p>
+          <div class="projects">
+            <div class="proj">
+              <span class="pill">Now selling</span>
+              <p class="proj__name">Casabella Tower</p>
+              <p class="proj__place">Palm Beach</p>
+              <p class="proj__line">17 ocean-view residences</p>
+            </div>
+            <div class="proj">
+              <span class="pill">Open</span>
+              <p class="proj__name">Casabella Suites</p>
+              <p class="proj__place">San Nicolas</p>
+              <p class="proj__line">8 suites on 100% solar</p>
+            </div>
+            <div class="proj">
+              <span class="pill">Coming 2027</span>
+              <p class="proj__name">Casabella City</p>
+              <p class="proj__place">Aruba</p>
+              <p class="proj__line">52 two-bedroom apartments</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1054,22 +1168,6 @@
             <div><dt>Residences</dt><dd>17</dd></div>
             <div><dt>Layouts</dt><dd>9</dd></div>
           </dl>
-        </div>
-      </section>
-
-      <section class="slide slide--full" data-project="Casabella Tower">
-        <div class="media">
-          <img src="/tower/assets/img/gallery/01-west-elevation.jpg" alt="" />
-        </div>
-        <div class="copy">
-          <p class="eyebrow">Architecture</p>
-          <h2 class="title">Deliberately quiet.</h2>
-          <p class="lede">
-            White volumes stepped back as the building rises, deep planted
-            balconies that shade the glass through the afternoon, and a
-            timber-screened stair core that carries light down the west façade
-            after dark.
-          </p>
         </div>
       </section>
 
@@ -1118,21 +1216,6 @@
       </section>
 
       <section class="slide slide--split" data-project="Casabella Tower">
-        <div class="media media--plan">
-          <img src="/tower/assets/img/floorplans/floor-2@1200.jpg" alt="" />
-        </div>
-        <div class="panel">
-          <p class="eyebrow">Floor plans</p>
-          <h2 class="title">No long corridors.</h2>
-          <p class="lede">
-            Four residences surround an open-air hallway, elevator and stair
-            core — so no home faces only its neighbours. Each has two bedrooms,
-            two bathrooms and its own balcony.
-          </p>
-        </div>
-      </section>
-
-      <section class="slide slide--split" data-project="Casabella Tower">
         <div class="media">
           <img src="/tower/assets/img/gallery/02-penthouse-terraces.jpg" alt="" />
         </div>
@@ -1150,50 +1233,18 @@
         </div>
       </section>
 
-      <section class="slide slide--split flip" data-project="Casabella Tower" data-seconds="13">
-        <div class="media">
-          <img src="/tower/assets/img/gallery/03-pool-terrace.jpg" alt="" />
-        </div>
-        <div class="panel">
-          <p class="eyebrow">Amenities</p>
-          <h2 class="title">Kept for residents.</h2>
-          <ul class="list list--num">
-            <li>Private pool</li>
-            <li>Rooftop gym &amp; cabanas</li>
-            <li>West-facing roof terrace</li>
-            <li>Gazebo &amp; BBQ areas</li>
-            <li>Secured basement parking</li>
-            <li>Rooftop solar array</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="slide slide--full" data-project="Casabella Tower">
+      <section class="slide slide--full" data-project="Casabella Tower" data-seconds="12">
         <div class="media">
           <img src="/tower/assets/img/gallery/04-rooftop-terrace.jpg" alt="" />
         </div>
         <div class="copy">
-          <p class="eyebrow">The roof</p>
-          <h2 class="title">More than 145 m², facing west into the sunset.</h2>
+          <p class="eyebrow">Amenities</p>
+          <h2 class="title">Kept for residents.</h2>
           <p class="lede">
-            Shared terrace, shaded cabanas and a residents' gym — beside the
-            solar array that offsets the building's common-area load.
+            A private pool, a rooftop gym and cabanas, more than 145 m² of
+            roof terrace facing west, gazebo and barbecue areas, and secured
+            basement parking. Palm Beach is five minutes on foot.
           </p>
-        </div>
-      </section>
-
-      <section class="slide slide--split" data-project="Casabella Tower">
-        <div class="media">
-          <img src="/tower/assets/img/location-aerial.jpg" alt="" />
-        </div>
-        <div class="panel">
-          <p class="eyebrow">Location</p>
-          <h2 class="title">Everything within five minutes, on foot.</h2>
-          <ul class="list">
-            <li><span>Palm Beach</span><span>5 min walk</span></li>
-            <li><span>Restaurants &amp; bars</span><span>5 min walk</span></li>
-            <li><span>Hotel strip &amp; casinos</span><span>5 min walk</span></li>
-          </ul>
         </div>
       </section>
 
@@ -1216,20 +1267,6 @@
             <div><dt>Pool</dt><dd>On site</dd></div>
             <div><dt>Power</dt><dd>100% solar</dd></div>
           </dl>
-        </div>
-      </section>
-
-      <section class="slide slide--full" data-project="Casabella Suites">
-        <div class="media">
-          <img src="/suites/assets/img/building.jpg" alt="" />
-        </div>
-        <div class="copy">
-          <p class="eyebrow">The building</p>
-          <h2 class="title">Small on purpose.</h2>
-          <p class="lede">
-            A shaded walkway down the middle with four suites either side — and
-            behind each one, its own walled backyard that nobody overlooks.
-          </p>
         </div>
       </section>
 
@@ -1272,20 +1309,6 @@
 
       <section class="slide slide--full" data-project="Casabella Suites">
         <div class="media">
-          <img src="/suites/assets/img/solar.jpg" alt="" />
-        </div>
-        <div class="copy">
-          <p class="eyebrow">Rooftop solar</p>
-          <h2 class="title">Every kilowatt comes off its own roof.</h2>
-          <p class="lede">
-            The suites, the air conditioning, the pool pump and the walkway
-            lights — all of it runs on the building's own array.
-          </p>
-        </div>
-      </section>
-
-      <section class="slide slide--full" data-project="Casabella Suites">
-        <div class="media">
           <img src="/suites/assets/img/location.jpg" alt="" />
         </div>
         <div class="copy">
@@ -1298,22 +1321,84 @@
         </div>
       </section>
 
-      <!-- ============ Company ============ -->
+      <!-- ============ Casabella City ============ -->
+      <!-- 52 two-bedroom apartments: 26 per floor on two identical floors
+           (plans BT-01, 2,752 m² each, 5,504 m² total). All City imagery is
+           rendered, so each slide says so. -->
 
-      <section class="slide slide--split flip" data-project="Casabella Aruba" data-seconds="14">
+      <section class="slide slide--full" data-project="Casabella City" data-seconds="12">
         <div class="media">
-          <img src="/assets/img/about.jpg" alt="" />
+          <img src="/assets/img/city/pool.jpg" alt="" />
         </div>
-        <div class="panel">
-          <p class="eyebrow">Our mission</p>
-          <h2 class="title">Build for the heat. Run on the sun.</h2>
-          <ul class="list list--num">
-            <li>Rooftop solar as standard</li>
-            <li>Shade before air conditioning</li>
-            <li>Cheap to run, not just to buy</li>
-          </ul>
+        <span class="render-note">Artist impression</span>
+        <div class="copy">
+          <p class="eyebrow">Coming 2027</p>
+          <h2 class="title">Casabella City</h2>
+          <p class="lede">
+            Fifty-two two-bedroom apartments on two storeys, wrapped around a
+            garden courtyard with a pool at its heart.
+          </p>
+          <dl class="stats">
+            <div><dt>Apartments</dt><dd>52</dd></div>
+            <div><dt>Bedrooms each</dt><dd>2</dd></div>
+            <div><dt>Storeys</dt><dd>2</dd></div>
+            <div><dt>Opening</dt><dd>2027</dd></div>
+          </dl>
         </div>
       </section>
+
+      <section class="slide slide--full" data-project="Casabella City">
+        <div class="media">
+          <img src="/assets/img/city/entrance.jpg" alt="" />
+        </div>
+        <span class="render-note">Artist impression</span>
+        <div class="copy">
+          <p class="eyebrow">Arrival</p>
+          <h2 class="title">Park at the door.</h2>
+          <p class="lede">
+            A landscaped entrance and parking on site, in front of two low
+            storeys of apartments.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--full" data-project="Casabella City">
+        <div class="media">
+          <img src="/assets/img/city/courtyard.jpg" alt="" />
+        </div>
+        <span class="render-note">Artist impression</span>
+        <div class="copy">
+          <p class="eyebrow">The courtyard</p>
+          <h2 class="title">Every front door opens onto the garden.</h2>
+          <p class="lede">
+            Covered walkways face a long central courtyard: shaded pergolas
+            with barbecues and dining tables, lawns, palms and the pool.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--grid three" data-project="Casabella City" data-seconds="12">
+        <div class="media">
+          <img src="/assets/img/city/living.jpg" alt="" /><span class="tag">Living</span>
+        </div>
+        <div class="media">
+          <img src="/assets/img/city/bedroom.jpg" alt="" /><span class="tag">Bedroom</span>
+        </div>
+        <div class="media">
+          <img src="/assets/img/city/bathroom.jpg" alt="" /><span class="tag">Bathroom</span>
+        </div>
+        <div class="panel">
+          <p class="eyebrow">Inside</p>
+          <h2 class="title">Two bedrooms in every apartment.</h2>
+          <p class="lede">
+            An open kitchen and living room, two bedrooms, a bathroom, a
+            closet and a laundry space.
+          </p>
+          <p class="fineprint">Artist impressions. Finishes may change.</p>
+        </div>
+      </section>
+
+      <!-- ============ Close ============ -->
 
       <section class="slide slide--close" data-project="Casabella Aruba">
         <div class="panel">
@@ -1324,7 +1409,7 @@
               <path d="M6 52h52" />
             </g>
           </svg>
-          <p class="eyebrow">Family owned · Aruba</p>
+          <p class="eyebrow">Tower · Suites · City</p>
           <h2 class="title">Casabella Aruba</h2>
           <div class="contact">
             <div><span>Web</span>casabellaaruba.com</div>
