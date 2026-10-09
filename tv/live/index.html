@@ -848,7 +848,7 @@
 
         var zonesOk = (function () {
           try {
-            new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Amsterdam" }).format(new Date());
+            new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata" }).format(new Date());
             return true;
           } catch (e) {
             return false;
@@ -876,7 +876,7 @@
             (H12 ? '<span class="ampm">' + (t.h < 12 ? "AM" : "PM") + "</span>" : "");
           $("date").textContent = DAYS[t.wd] + ", " + MONTHS[t.mo] + " " + t.d;
           $("zones").innerHTML = zonesOk
-            ? "NY <b>" + zoneTime("America/New_York") + "</b> · AMS <b>" + zoneTime("Europe/Amsterdam") + "</b>"
+            ? "NY <b>" + zoneTime("America/New_York") + "</b> · India <b>" + zoneTime("Asia/Kolkata") + "</b>"
             : "";
           safely(renderHours);
           maybeReload(t);

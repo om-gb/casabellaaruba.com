@@ -1504,7 +1504,7 @@
           // Second-row clocks: where buyers and family call from.
           zones: [
             { label: "New York", tz: "America/New_York" },
-            { label: "Amsterdam", tz: "Europe/Amsterdam" },
+            { label: "India", tz: "Asia/Kolkata" },
           ],
           hour12: param("h24") !== "1",
           seconds: 10, // default slide length
@@ -1662,7 +1662,7 @@
 
         function supportsZones() {
           try {
-            new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Amsterdam" }).format(new Date());
+            new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata" }).format(new Date());
             return true;
           } catch (e) {
             return false;
