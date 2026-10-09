@@ -662,21 +662,21 @@
       (function () {
         "use strict";
 
-        // Landscape photos only; each fills the screen. Copy is from the
-        // Tower and Suites pages.
+        // Landscape photos only; each fills the screen. Grouped by project,
+        // each photo once — near-duplicate views are left out. Copy is from
+        // the Tower and Suites pages; City imagery is rendered.
         var PHOTOS = [
           ["/tower/assets/img/hero.jpg", "Casabella Tower · Palm Beach", "Ocean-view residences", "Now selling — pre-construction from $591,225"],
-          ["/suites/assets/img/hero.jpg", "Casabella Suites · San Nicolas", "Eight suites that run on sunlight", "A pool, a barbecue and a private backyard behind every door"],
-          ["/tower/assets/img/gallery/01-west-elevation.jpg", "Casabella Tower", "Deliberately quiet", "Deep planted balconies shade the glass through the afternoon"],
-          ["/suites/assets/img/pool.jpg", "Casabella Suites", "A pool shared by eight suites", "Not eight hundred"],
           ["/tower/assets/img/gallery/04-rooftop-terrace.jpg", "Casabella Tower", "The roof terrace", "More than 145 m², facing west into the sunset"],
+          ["/suites/assets/img/hero.jpg", "Casabella Suites · San Nicolas", "Eight suites that run on sunlight", "A pool, a barbecue and a private backyard behind every door"],
+          ["/suites/assets/img/pool.jpg", "Casabella Suites", "A pool shared by eight suites", "Not eight hundred"],
           ["/suites/assets/img/living.jpg", "Casabella Suites", "Two layouts, eight suites", "Every suite has its own kitchen, bathroom and backyard"],
-          ["/suites/assets/img/solar.jpg", "Casabella Suites", "Every kilowatt from its own roof", "The suites, the air conditioning and the pool pump"],
-          ["/suites/assets/img/building.jpg", "Casabella Suites", "Small on purpose", "Four suites either side of a shaded walkway"],
-          ["/suites/assets/img/bedroom.jpg", "Casabella Suites", "One- and two-bedroom suites", "Six one-bedroom, two two-bedroom"],
-          ["/assets/img/about.jpg", "Casabella Aruba", "A family name on every building", "Family owned, building where it lives"],
           ["/suites/assets/img/location.jpg", "San Nicolas", "The half of Aruba most visitors never see", "Street murals, old bars and a coastline without resorts"],
-          ["/suites/assets/img/kitchen.jpg", "Casabella Suites", "A full kitchen in every suite", "Built to be let by the night"],
+          ["/assets/img/city/pool.jpg", "Casabella City · In development", "52 two-bedroom apartments", "Starting 2027 · around a garden courtyard with a pool · Artist impression"],
+          ["/assets/img/city/entrance.jpg", "Casabella City", "Park at the door", "A landscaped entrance and parking on site · Artist impression"],
+          ["/assets/img/city/courtyard.jpg", "Casabella City", "Every front door opens onto the garden", "Pergolas, barbecues, lawns and palms · Artist impression"],
+          ["/assets/img/city/barbecue.jpg", "Casabella City", "Evenings in the courtyard", "Shaded pergolas with barbecues and dining tables · Artist impression"],
+          ["/assets/img/city/bedroom.jpg", "Casabella City", "Two bedrooms in every apartment", "An open kitchen and living room, a bathroom and laundry space · Artist impression"],
         ];
 
         var PHOTO_MS = 14000;

@@ -103,6 +103,13 @@ fetches and trims them server-side and caches the result for five minutes.
 Weather comes straight from Open-Meteo, as on `/tv/`. Any source that is down
 leaves its widget showing a quiet message instead of breaking the page.
 
+The slideshow at `/tv/` runs in four chapters — an opening slide naming all
+three projects, then Tower, Suites and City — 15 slides with every photo used
+once. City imagery is rendered, so those slides carry an "Artist impression"
+note. City's figures (52 two-bedroom apartments, two storeys) come from the
+architect's plans, BT-01: 26 apartments on each of two identical floors.
+Its photos live in `assets/img/city/`.
+
 Both TV pages open on a short loading screen that downloads and decodes every
 photo before the first one shows, so changing photos never stalls on a slow
 TV. It gives up waiting after 30 seconds, so one missing photo cannot hold
