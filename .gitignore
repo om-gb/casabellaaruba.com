@@ -7,3 +7,7 @@ preview/
 # Cloudflare local state and secrets. .dev.vars holds real API keys.
 .wrangler/
 .dev.vars
+
+# Listing scanner output — regenerate with tools/listing-scan/scan.py
+tools/listing-scan/out/
+__pycache__/

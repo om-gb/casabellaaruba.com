@@ -20,6 +20,7 @@ casabellaaruba.com/
 ├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
 ├── tv/               office TV slideshow at /tv/, live dashboard at /tv/live/
 ├── functions/api/    enquiry.js (form handler), live.js (dashboard news + rates)
+├── tools/            build-preview.py, listing-scan/ (land price scanner)
 ├── _headers          cache + security headers
 ├── wrangler.toml     project name + compatibility date
 ├── robots.txt
@@ -127,6 +128,35 @@ python3 tools/build-preview.py
 
 The preview's enquiry form deliberately reports that it cannot send; only the
 deployed site has the Function behind it.
+
+## Land price scanner
+
+`tools/listing-scan/` is an internal tool, not part of the site: it crawls the
+Aruba real estate sites in `sites.json`, reads each listing's asking price and
+lot area, and lists everything at or under a florin-per-m² cap. The default is
+**100 fl/m²**, plus anything up to 15% over it marked "around".
+
+```bash
+python3 tools/listing-scan/scan.py                 # 100 fl/m² on lot area
+python3 tools/listing-scan/scan.py --max 150 --near 0
+python3 tools/listing-scan/scan.py --only kw       # one site
+python3 tools/listing-scan/scan.py --url https://… # what it reads off one page
+python3 -m unittest discover tools/listing-scan    # parser checks
+```
+
+- USD is converted at the fixed 1.79 peg. Euros use `--awg-per-eur`.
+- Price ÷ **lot** m² by default (`--basis built|either` to change). Check
+  the `tenure` column: long-lease land (*erfpacht*) is far cheaper than
+  freehold, so the two should not be compared directly.
+- Listings marked sold or under contract are left out unless you pass `--include-sold`.
+- Every listing it read goes to `tools/listing-scan/out/scan-<date>.csv`
+  (gitignored), so you can apply a different cut-off without crawling again.
+- It reads prices generically (schema.org data, then page text), so most
+  sites need only a start URL. If a site prints "0 listings", its listing
+  links don't look like listings to the scanner. Add a `detail` regex for
+  that site in `sites.json`. Sites that build their pages with JavaScript
+  can't be read this way.
+- It respects `robots.txt` and waits 1.5 s between requests to the same site.
 
 ## The enquiry form
 

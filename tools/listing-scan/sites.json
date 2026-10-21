@@ -1,0 +1,47 @@
+{
+  "_comment": "Where scan.py starts crawling. 'start' is an index page of listings; the scanner follows same-site links matching 'detail' (a regex on the URL path) and pagination links up to --pages deep. Omit 'detail' to use the generic pattern in scan.py. Add a site by adding an entry; nothing else needs touching.",
+  "sites": [
+    {
+      "name": "RE/MAX Aruba",
+      "start": [
+        "https://remaxaruba.com/property/land-for-sale"
+      ]
+    },
+    {
+      "name": "Keller Williams Aruba",
+      "start": [
+        "https://kw-aruba.com/listings/for-sale/land"
+      ]
+    },
+    {
+      "name": "ROG Aruba",
+      "start": [
+        "https://rogaruba.com/listings/for-sale/land"
+      ]
+    },
+    {
+      "name": "MPG Aruba",
+      "start": [
+        "https://www.mpgaruba.com/land-for-sale-in-aruba"
+      ]
+    },
+    {
+      "name": "Aruba Listings",
+      "start": [
+        "https://arubalistings.com/sale"
+      ]
+    },
+    {
+      "name": "Properstar",
+      "start": [
+        "https://www.properstar.com/aruba/buy/land-plot/price-low-to-high"
+      ]
+    },
+    {
+      "name": "JamesEdition",
+      "start": [
+        "https://www.jamesedition.com/real_estate/land-aruba"
+      ]
+    }
+  ]
+}
