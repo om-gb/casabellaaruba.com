@@ -1,13 +1,6 @@
 {
-  "_comment": "Where scan.py starts. 'start' is an index page of listings; the scanner follows same-site links that look like listings, and pagination, up to --pages deep. 'detail' (optional) is a regex on the URL path for sites whose listing links the generic pattern misses. 'feed': 'lx-mapdata' reads a portal that embeds its whole catalogue as JSON in the start page instead of crawling. Properstar and JamesEdition answer 403 to scripts, so they are not listed.",
+  "_comment": "Where scan.py starts. 'start' is an index page of listings; the scanner follows same-site links that look like listings, and pagination, up to --pages deep. 'detail' (optional) is a regex on the URL path for sites whose listing links the generic pattern misses. 'feed': 'lx-mapdata' reads a portal that embeds its whole catalogue as JSON in the start page instead of crawling. Properstar and JamesEdition answer 403 to scripts, so they are not listed. The portal is listed last so that a listing found on both keeps the broker's own link.",
   "sites": [
-    {
-      "name": "Aruba Listings",
-      "start": [
-        "https://arubalistings.com/sale/all"
-      ],
-      "feed": "lx-mapdata"
-    },
     {
       "name": "RE/MAX Aruba",
       "start": [
@@ -31,6 +24,13 @@
       "start": [
         "https://www.mpgaruba.com/land-for-sale-in-aruba"
       ]
+    },
+    {
+      "name": "Aruba Listings",
+      "start": [
+        "https://arubalistings.com/sale/all"
+      ],
+      "feed": "lx-mapdata"
     }
   ]
 }
