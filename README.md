@@ -151,6 +151,12 @@ python3 -m unittest discover tools/listing-scan    # parser checks
 - Listings marked sold or under contract are left out unless you pass `--include-sold`.
 - Every listing it read goes to `tools/listing-scan/out/scan-<date>.csv`
   (gitignored), so you can apply a different cut-off without crawling again.
+- **arubalistings.com is the main source.** It's a portal that carries listings from
+  about 30 brokers (Century 21, Berkshire Hathaway, RE/MAX, KW, Coldwell Banker,
+  Sotheby's and more), all in one page of JSON. The scanner reads that directly
+  (`"feed": "lx-mapdata"` in `sites.json`). The broker sites are crawled as
+  well, to catch anything not on the portal. A lot listed on both shows up once.
+- Properstar and JamesEdition refuse scripts (HTTP 403), so they're not scanned.
 - It reads prices generically (schema.org data, then page text), so most
   sites need only a start URL. If a site prints "0 listings", its listing
   links don't look like listings to the scanner. Add a `detail` regex for

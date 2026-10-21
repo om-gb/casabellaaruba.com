@@ -299,12 +299,18 @@ def read_listing(url: str, body: str, awg_per_eur: float) -> dict:
         except ValueError:
             pass
     if price is None:
-        # First plausible asking price after the heading. Below 5,000 is a
-        # fee, a deposit or a stray "$1".
-        for amount, c, _ in find_prices(main):
-            if amount >= 5_000:
-                price, cur = amount, c
-                break
+        # The asking price sits next to the heading: just under it on most
+        # sites, just above it on some (RE/MAX). Otherwise take the first one
+        # further down. Below 5,000 is a fee, a deposit or a stray "$1".
+        after = [(a, c, o) for a, c, o in find_prices(main) if a >= 5_000]
+        above = text[max(0, start - 600):start]
+        before = [(a, c, o) for a, c, o in find_prices(above) if a >= 5_000]
+        if after and after[0][2] < 400:
+            price, cur = after[0][:2]
+        elif before:
+            price, cur = before[-1][:2]
+        elif after:
+            price, cur = after[0][:2]
 
     loose = None
     for m2, kind, _ in find_areas(main):
@@ -343,7 +349,46 @@ def read_listing(url: str, body: str, awg_per_eur: float) -> dict:
         "awg_per_built_m2": per(built),
         "tenure": tenure,
         "status": "sold/under contract" if GONE_RE.search(main[:400]) else "",
+        "type": "land" if is_land else "",
+        "broker": "",
     }
+
+
+def read_feed(base: str, body: str) -> list[dict]:
+    """Rows from a portal that embeds its whole catalogue as JSON in one page.
+
+    arubalistings.com puts every listing, from most of the island's brokers,
+    in <script id="lx-mapdata">: price, type, lot and built size, status.
+    """
+    m = re.search(r'<script[^>]*id="lx-mapdata"[^>]*>(.*?)</script>', body, re.S)
+    if not m:
+        return []
+    rows = []
+    for item in json.loads(m.group(1)):
+        if item.get("contract", "for_sale") != "for_sale":
+            continue
+        found = next((p for p in find_prices(str(item.get("price") or "")) if p[0] >= 5_000), None)
+        price, cur = found[:2] if found else (None, "")
+        awg = price * (AWG_PER_USD if cur == "USD" else 1.0) if price else None
+        kind = item.get("type") or ""
+        lot = item.get("lot") or (item.get("size") if kind.startswith("Land") else None)
+        built = item.get("size") if not kind.startswith("Land") else None
+        rows.append({
+            "title": html.unescape(item.get("title") or "")[:120],
+            "url": urllib.parse.urljoin(base, item.get("seo") or ""),
+            "price": price,
+            "currency": cur,
+            "price_awg": round(awg) if awg else None,
+            "lot_m2": round(lot) if lot else None,
+            "built_m2": round(built) if built else None,
+            "awg_per_lot_m2": round(awg / lot, 1) if awg and lot else None,
+            "awg_per_built_m2": round(awg / built, 1) if awg and built else None,
+            "tenure": "leasehold" if "Lease" in kind else "freehold" if "Freehold" in kind else "",
+            "status": (item.get("statusLabel") or "").lower(),
+            "type": kind,
+            "broker": item.get("broker") or "",
+        })
+    return rows
 
 
 # ------------------------------------------------------------------ crawl --
@@ -465,7 +510,7 @@ def crawl(site: dict, fetch: Fetcher, max_pages: int, max_listings: int, stats: 
 
 # ------------------------------------------------------------------- main --
 
-COLUMNS = ["site", "title", "price", "currency", "price_awg", "lot_m2", "built_m2",
+COLUMNS = ["site", "broker", "type", "title", "price", "currency", "price_awg", "lot_m2", "built_m2",
            "awg_per_lot_m2", "awg_per_built_m2", "tenure", "status", "url"]
 
 
@@ -512,8 +557,17 @@ def main():
     for site in sites:
         print(f"{site['name']}: ", end="", flush=True, file=sys.stderr)
         stats, n = {"fetched": 0, "failed": 0}, 0
-        for url, body in crawl(site, fetch, args.pages, args.listings, stats):
-            row = read_listing(url, body, args.awg_per_eur)
+        if site.get("feed"):
+            found = []
+            for url in site["start"]:
+                body = fetch.get(url)
+                if body is not None:
+                    stats["fetched"] += 1
+                    found += read_feed(url, body)
+        else:
+            found = (read_listing(url, body, args.awg_per_eur)
+                     for url, body in crawl(site, fetch, args.pages, args.listings, stats))
+        for row in found:
             row["site"] = site["name"]
             rows.append(row)
             n += 1
@@ -523,6 +577,23 @@ def main():
         else:
             note = "" if n else " (index read but no listing links matched; set 'detail' in sites.json)"
             print(f"{n} listings{note}", file=sys.stderr)
+
+    # The same lot is often on its broker's site and on a portal: one row,
+    # naming every site it was seen on.
+    # Same lot size and a price within 2% (sites round the florin conversion
+    # differently) counts as the same listing.
+    merged = []
+    for r in rows:
+        twin = next((m for m in merged if r["lot_m2"] and r["price_awg"] and m["lot_m2"] == r["lot_m2"]
+                     and m["price_awg"] and abs(m["price_awg"] - r["price_awg"]) <= 0.02 * r["price_awg"]), None)
+        if twin is None:
+            merged.append(r)
+            continue
+        if r["site"] not in twin["site"]:
+            twin["site"] += " + " + r["site"]
+        for k in ("broker", "type", "tenure", "status", "built_m2"):
+            twin[k] = twin[k] or r[k]
+    rows = merged
 
     out = pathlib.Path(args.out) if args.out else HERE / "out" / f"scan-{datetime.date.today()}.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -555,8 +626,9 @@ def main():
     print(f"{'fl/m²':>7}  {'':6}  {'price fl':>11}  {'lot m²':>8}  {'tenure':9}  listing")
     for r in hits:
         tag = "UNDER" if rate(r) <= args.max else "around"
+        who = " · ".join(x for x in (r["broker"] or r["site"], r["status"]) if x)
         print(f"{rate(r):7.1f}  {tag:6}  {r['price_awg']:>11,}  {r['lot_m2'] or '':>8}  "
-              f"{r['tenure']:9}  {r['title'][:60]}\n{'':49}{r['url']}")
+              f"{r['tenure']:9}  {r['title'][:60]}\n{'':49}{who}\n{'':49}{r['url']}")
 
 
 if __name__ == "__main__":
