@@ -156,7 +156,8 @@ python3 -m unittest discover tools/listing-scan    # parser checks
   Sotheby's and more), all in one page of JSON. The scanner reads that directly
   (`"feed": "lx-mapdata"` in `sites.json`). The broker sites are crawled as
   well, to catch anything not on the portal. A lot listed on both shows up once.
-- Properstar and JamesEdition refuse scripts (HTTP 403), so they're not scanned.
+- Properstar, JamesEdition and Century 21's own site refuse scripts (HTTP 403),
+  so they're not scanned directly. Century 21's listings still arrive through the portal.
 - It reads prices generically (schema.org data, then page text), so most
   sites need only a start URL. If a site prints "0 listings", its listing
   links don't look like listings to the scanner. Add a `detail` regex for

@@ -1,5 +1,5 @@
 {
-  "_comment": "Where scan.py starts. 'start' is an index page of listings; the scanner follows same-site links that look like listings, and pagination, up to --pages deep. 'detail' (optional) is a regex on the URL path for sites whose listing links the generic pattern misses. 'feed': 'lx-mapdata' reads a portal that embeds its whole catalogue as JSON in the start page instead of crawling. Properstar and JamesEdition answer 403 to scripts, so they are not listed. The portal is listed last so that a listing found on both keeps the broker's own link.",
+  "_comment": "Where scan.py starts. 'start' is an index page of listings; the scanner follows same-site links that look like listings, and pagination, up to --pages deep. 'detail' (optional) is a regex on the URL path for sites whose listing links the generic pattern misses. 'feed': 'lx-mapdata' reads a portal that embeds its whole catalogue as JSON in the start page instead of crawling. Properstar, JamesEdition and Century 21 (century21aruba.com) answer 403 to scripts, so they are not listed. The portal is listed last so that a listing found on both keeps the broker's own link.",
   "sites": [
     {
       "name": "RE/MAX Aruba",
@@ -24,6 +24,19 @@
       "start": [
         "https://www.mpgaruba.com/land-for-sale-in-aruba"
       ]
+    },
+    {
+      "name": "Berkshire Hathaway Aruba",
+      "start": [
+        "https://www.bhhsaruba.com/land-for-sale"
+      ]
+    },
+    {
+      "name": "Coldwell Banker Aruba",
+      "start": [
+        "https://www.coldwellbanker.aw/index.php?action=searchresults&pclass[]=2"
+      ],
+      "detail": "^/listing-.+-\\d+\\.html$"
     },
     {
       "name": "Aruba Listings",

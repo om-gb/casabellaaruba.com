@@ -32,7 +32,9 @@ class Prices(unittest.TestCase):
 class Areas(unittest.TestCase):
     def test_labels(self):
         found = [(round(a), k) for a, k, _ in find_areas("Lot size: 900 m² · Built area 180 m2")]
-        self.assertEqual(found, [(900, "lot"), (180, "built")])
+        self.assertEqual(found, [(900, "lotsize"), (180, "built")])
+        found = [(round(a), k) for a, k, _ in find_areas("Lot Number 809: 700 m2")]
+        self.assertEqual(found, [(700, "lot")])
 
     def test_units(self):
         (a, _, _), = find_areas("7793,07 ft²")
@@ -52,6 +54,14 @@ class Listing(unittest.TestCase):
         self.assertEqual(r["lot_m2"], 844)
         self.assertEqual(r["tenure"], "freehold")
         self.assertEqual(r["status"], "")
+
+    def test_lot_size_label_beats_lots_in_description(self):
+        body = """<h1>Dakota 6380 m2</h1><p>USD 1,465,000</p><p>SALE IN PROGRESS</p>
+        <p>Five adjacent lots: Lot Number 809: 700 m2, Lot Number 977: 150 m2</p>
+        <p>Lot size: 6.380 m2</p>"""
+        r = read_listing("https://example.aw/l/3", body, 2.05)
+        self.assertEqual(r["lot_m2"], 6380)
+        self.assertEqual(r["status"], "sold/under contract")
 
     def test_jsonld_listing(self):
         body = """<html><head><script type="application/ld+json">

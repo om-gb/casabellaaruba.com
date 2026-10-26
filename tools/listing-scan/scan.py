@@ -106,6 +106,7 @@ AREA_RE = re.compile(
     r"|ha\b|hectares?\b|acres?\b)",
     re.I,
 )
+LOT_SIZE_LABEL = re.compile(r"\b(lot|land|plot|site|parcel)\s*(size|area|surface)\s*(\(m2\))?\s*[:\-]?\s*$", re.I)
 LOT_WORDS = re.compile(
     r"\b(lot|land|plot|parcel|terrain|terreno|perceel|kavel|grond|erf|site|property size)\b", re.I
 )
@@ -128,7 +129,11 @@ def to_m2(n: float, unit: str) -> float:
 
 
 def find_areas(text: str):
-    """Yield (m2, kind, offset); kind is 'lot', 'built' or ''."""
+    """Yield (m2, kind, offset); kind is 'lotsize', 'lot', 'built' or ''.
+
+    'lotsize' is a number under an explicit "Lot size:" label, which beats a
+    lot merely mentioned in the description ("Lot Number 809: 700 m2").
+    """
     for m in AREA_RE.finditer(text):
         try:
             m2 = to_m2(parse_number(m.group("n")), m.group("u"))
@@ -143,6 +148,8 @@ def find_areas(text: str):
         kind = ""
         if lot or built:
             kind = "lot" if (lot[-1] if lot else -1) > (built[-1] if built else -1) else "built"
+        if kind == "lot" and LOT_SIZE_LABEL.search(before):
+            kind = "lotsize"
         yield m2, kind, m.start()
 
 
@@ -253,7 +260,9 @@ END_OF_LISTING = re.compile(
 )
 LEASE_RE = re.compile(r"lease\s?hold|long[- ]lease|erfpacht|leased land|land lease|lease land", re.I)
 FREE_RE = re.compile(r"full[- ]ownership|freehold|fee simple|eigendom|private ownership|own land", re.I)
-GONE_RE = re.compile(r"\b(sold|under contract|under offer|reserved|verkocht|pending sale)\b", re.I)
+GONE_RE = re.compile(
+    r"\b(sold|under contract|under offer|reserved|verkocht|pending sale|sale in progress|on hold)\b", re.I
+)
 
 
 def main_text(page: Page) -> str:
@@ -312,16 +321,16 @@ def read_listing(url: str, body: str, awg_per_eur: float) -> dict:
         elif after:
             price, cur = after[0][:2]
 
-    loose = None
-    for m2, kind, _ in find_areas(main):
-        if kind == "lot" and lot is None:
-            lot = m2
-        elif kind == "built" and built is None:
-            built = m2
-        elif not kind and loose is None:
-            loose = m2
-
     is_land = bool(re.search(r"\b(land|lot|plot|parcel|terrain|terreno|kavel)\b", title, re.I))
+    # Best evidence first: schema.org, a "Lot size:" label, a size in a land
+    # listing's title, then any lot-labelled number, then an unlabelled one.
+    first = {}
+    for m2, kind, _ in find_areas(main):
+        first.setdefault(kind, m2)
+    in_title = next((m2 for m2, _, _ in find_areas(title)), None) if is_land else None
+    lot = lot or first.get("lotsize") or in_title or first.get("lot")
+    built = built or first.get("built")
+    loose = first.get("")
     if lot is None and loose is not None and (is_land or built is None):
         lot = loose
     elif built is None and loose is not None and lot is not None:
