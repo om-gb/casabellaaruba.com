@@ -80,11 +80,13 @@ brochure section for section. Same self-contained shape as `/suites/`: its own
 `city/css/styles.css` and `city/js/main.js`, and the form posts to
 `/api/enquiry` with `interest=city`.
 
-Its images are the renders in `assets/img/city/` (shared with the TV pages),
-each with an `@800` copy for phones. Every image of the building is a render,
-and the page says so beside each one. Brochure figures that are still blank —
-unit prices, the payment percentages, HOA, the plan drawings — are left off
-rather than shown as zeros; `CONTENT.md` lists them.
+Its images live in `assets/img/city/` (shared with the TV pages): ten renders,
+each with an `@800` copy for phones, and the architect's drawings as PNGs on
+white — `plan-unit.png` (BT-01), `elevation-front.png` (BT-02) and
+`plan-site.png` (BT-03). Every image of the building is a render, and the page
+says so beside each one. Brochure figures that are still blank — unit prices,
+the payment percentages, HOA — are left off rather than shown as zeros;
+`CONTENT.md` lists them.
 
 ## Office TV display
 

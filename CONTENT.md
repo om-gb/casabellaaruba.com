@@ -72,9 +72,6 @@ is **left off the page**, not shown as a placeholder. To add each one:
 - **Specs with no value yet** — countertop and cabinetry, appliance brands,
   wall and floor tile, flooring, air conditioning, furnished or not.
 - **Parking spaces** — the number is not given.
-- **Drawings.** The floor plan (BT-01), site layout (BT-03) and street
-  elevation (BT-02), plus brochure photos 1, 3 and 6, were not supplied. The
-  page uses the seven renders in `assets/img/city/`.
 - **Sales phone and website.** The brochure had placeholders; the page lists
   `sales@casabellaaruba.com` and the enquiry form.
 - **Developer name.** The brochure says "Casa Bella Development"; the page says

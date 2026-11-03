@@ -32,7 +32,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/city/css/styles.css?v=20261103-1" />
+    <link rel="stylesheet" href="/city/css/styles.css?v=20261103-2" />
 
     <script type="application/ld+json">
       {
@@ -56,7 +56,7 @@
       }
     </script>
 
-    <script src="/city/js/main.js?v=20261103-1" defer></script>
+    <script src="/city/js/main.js?v=20261103-2" defer></script>
   </head>
 
   <body>
@@ -206,18 +206,35 @@
             </p>
           </div>
 
-          <figure class="wide" data-reveal>
-            <img
-              src="/assets/img/city/pool.jpg"
-              srcset="/assets/img/city/pool@800.jpg 800w, /assets/img/city/pool.jpg 1600w"
-              sizes="(min-width: 1240px) 1100px, 92vw"
-              width="1600"
-              height="893"
-              alt="The pool at dusk with its mosaic tile edge, loungers, parasols and flowering hydrangeas, the two-storey wings lit behind."
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
+          <div class="trio">
+            <figure data-reveal>
+              <img
+                src="/assets/img/city/pool.jpg"
+                srcset="/assets/img/city/pool@800.jpg 800w, /assets/img/city/pool.jpg 1600w"
+                sizes="(min-width: 900px) 62vw, 92vw"
+                width="1600" height="893"
+                alt="The pool at dusk with its mosaic tile edge, loungers, parasols and flowering hydrangeas, the two-storey wings lit behind."
+                loading="lazy" decoding="async" />
+            </figure>
+            <figure data-reveal>
+              <img
+                src="/assets/img/city/pool-view.jpg"
+                srcset="/assets/img/city/pool-view@800.jpg 800w, /assets/img/city/pool-view.jpg 1600w"
+                sizes="(min-width: 900px) 30vw, 92vw"
+                width="1600" height="900"
+                alt="View down the pool toward the far wing and its stone stair tower."
+                loading="lazy" decoding="async" />
+            </figure>
+            <figure data-reveal>
+              <img
+                src="/assets/img/city/street.jpg"
+                srcset="/assets/img/city/street@800.jpg 800w, /assets/img/city/street.jpg 1600w"
+                sizes="(min-width: 900px) 30vw, 92vw"
+                width="1600" height="900"
+                alt="Street side of the building with its lit facade and the guest parking court."
+                loading="lazy" decoding="async" />
+            </figure>
+          </div>
 
           <div class="amenities">
             <div class="amenity" data-reveal>
@@ -241,37 +258,52 @@
       </section>
 
       <!-- ========================================== OUTDOOR LIVING ======= -->
-      <section class="section" id="outdoor">
+      <section class="section section--dusk" id="outdoor">
         <div class="shell">
-          <div class="split split--reverse">
-            <div class="split__media" data-reveal>
-              <img
+          <div class="section-head">
+            <p class="eyebrow">Outdoor living</p>
+            <h2>Evenings under <em>the pergolas.</em></h2>
+            <p class="lede">
+              Timber pergolas with retractable shade canopies hold the shared
+              grills and dining tables. They sit between the pool and the
+              entrance, close to every front door.
+            </p>
+          </div>
+
+          <figure class="wide" data-reveal>
+            <img
                 src="/assets/img/city/barbecue.jpg"
                 srcset="/assets/img/city/barbecue@800.jpg 800w, /assets/img/city/barbecue.jpg 1600w"
-                sizes="(min-width: 900px) 46vw, 92vw"
-                width="1600"
-                height="900"
+                sizes="(min-width: 1240px) 1100px, 92vw"
+                width="1600" height="900"
                 alt="Two pergolas with grills and teak dining sets on the herringbone-paved terrace at sunset."
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div data-reveal>
-              <p class="eyebrow">Outdoor living</p>
-              <h2>Evenings under <em>the pergolas.</em></h2>
-              <div class="split__body">
-                <p>
-                  Timber pergolas with retractable shade canopies hold the
-                  shared grills and dining tables. They sit between the pool and
-                  the entrance, close to every front door.
-                </p>
-              </div>
-              <p class="render-note">
-                Renderings are artistic impressions and may differ from the
-                final construction.
-              </p>
-            </div>
+                loading="lazy" decoding="async" />
+          </figure>
+          <div class="pair">
+            <figure data-reveal>
+              <img
+                src="/assets/img/city/pergola-night.jpg"
+                srcset="/assets/img/city/pergola-night@800.jpg 800w, /assets/img/city/pergola-night.jpg 1600w"
+                sizes="(min-width: 900px) 46vw, 92vw"
+                width="1600" height="900"
+                alt="The pergola terrace at night, with grills, dining sets and lit apartment windows."
+                loading="lazy" decoding="async" />
+            </figure>
+            <figure data-reveal>
+              <img
+                src="/assets/img/city/courtyard.jpg"
+                srcset="/assets/img/city/courtyard@800.jpg 800w, /assets/img/city/courtyard.jpg 1600w"
+                sizes="(min-width: 900px) 46vw, 92vw"
+                width="1600" height="900"
+                alt="Aerial view of the pergola terraces leading to the pool."
+                loading="lazy" decoding="async" class="pair__aerial" />
+            </figure>
           </div>
+
+          <p class="render-note">
+            Renderings are artistic impressions and may differ from the final
+            construction.
+          </p>
         </div>
       </section>
 
@@ -380,48 +412,86 @@
                 bedroom sits in the neighbouring bay and opens off the entry
                 hall.
               </p>
+              <dl class="facts">
+                <div><dt>Kitchen &amp; living</dt><dd>4.75 × 5.00 m</dd></div>
+                <div><dt>Bedroom 1</dt><dd>4.75 × 3.75 m</dd></div>
+                <div><dt>Bedroom 2</dt><dd>In the adjoining bay, off the entry hall</dd></div>
+                <div><dt>Bathroom</dt><dd>With closet and washer / dryer space</dd></div>
+                <div><dt>Structural bay</dt><dd>4.75 m</dd></div>
+              </dl>
             </div>
-            <dl class="facts">
-              <div><dt>Kitchen &amp; living</dt><dd>4.75 × 5.00 m</dd></div>
-              <div><dt>Bedroom 1</dt><dd>4.75 × 3.75 m</dd></div>
-              <div><dt>Bedroom 2</dt><dd>In the adjoining bay, off the entry hall</dd></div>
-              <div><dt>Bathroom</dt><dd>With closet and washer / dryer space</dd></div>
-              <div><dt>Structural bay</dt><dd>4.75 m</dd></div>
-            </dl>
+            <figure class="plan-card">
+              <a href="/assets/img/city/plan-unit.png" target="_blank" rel="noopener">
+                <img
+                  src="/assets/img/city/plan-unit.png"
+                  width="505" height="590"
+                  alt="Floor plan of a typical two-bedroom apartment: bedroom, closet, washer and dryer, bathroom, kitchen and living area, plus a second bedroom in the adjoining bay."
+                  loading="lazy" decoding="async" />
+              </a>
+              <figcaption>
+                Extract from plan BT-01, scale 1:100. Bays of 4,750 + 4,750 mm.
+                The shaded room belongs to the next apartment.
+              </figcaption>
+            </figure>
           </article>
+
         </div>
       </section>
 
       <!-- ============================================== SITE PLAN ======= -->
       <section class="section" id="site">
         <div class="shell">
-          <div class="section-head">
-            <p class="eyebrow">Site plan</p>
-            <h2>The site, <em>at a glance.</em></h2>
-            <div class="split__body">
-              <p>
-                The apartments wrap three sides of a long central courtyard. A
-                parking court with a one-way loop sits beside the shorter wing.
-              </p>
-              <p>
-                The ground and upper floors share the same layout. A gallery
-                runs along the courtyard side of each wing, with stairs at the
-                ends and midway along.
+          <div class="siteplan">
+            <figure class="plan-card" data-reveal>
+              <a href="/assets/img/city/plan-site.png" target="_blank" rel="noopener">
+                <img
+                  src="/assets/img/city/plan-site.png"
+                  width="1200" height="2529"
+                  alt="Site layout BT-03: apartments wrap three sides of a long central courtyard, with a parking court and one-way loop beside the shorter wing."
+                  loading="lazy" decoding="async" />
+              </a>
+              <figcaption>Site layout (terrein indeling) BT-03 · scale 1:500</figcaption>
+            </figure>
+
+            <div data-reveal>
+              <p class="eyebrow">Site plan</p>
+              <h2>The site, <em>at a glance.</em></h2>
+              <div class="split__body">
+                <p>
+                  The apartments wrap three sides of a long central courtyard. A
+                  parking court with a one-way loop sits beside the shorter wing.
+                </p>
+                <p>
+                  The ground and upper floors share the same layout. A gallery
+                  runs along the courtyard side of each wing, with stairs at the
+                  ends and midway along.
+                </p>
+              </div>
+
+              <dl class="areas">
+                <div><dt>Total floor area</dt><dd>5,504 m²</dd></div>
+                <div><dt>Ground floor</dt><dd>2,752 m²</dd></div>
+                <div><dt>Upper floor</dt><dd>2,752 m²</dd></div>
+                <div><dt>Wing depth</dt><dd>11.5 m</dd></div>
+              </dl>
+
+              <p class="render-note">
+                Plans shown for orientation. Unit numbering and final layouts
+                follow the sales documents. Select a drawing to open it full size.
               </p>
             </div>
           </div>
 
-          <dl class="stats stats--spaced">
-            <div><dt>Total floor area</dt><dd>5,504 m²</dd></div>
-            <div><dt>Ground floor</dt><dd>2,752 m²</dd></div>
-            <div><dt>Upper floor</dt><dd>2,752 m²</dd></div>
-            <div><dt>Wing depth</dt><dd>11.5 m</dd></div>
-          </dl>
-
-          <p class="render-note">
-            Figures from plans BT-01 to BT-03. Unit numbering and final layouts
-            follow the sales documents.
-          </p>
+          <figure class="plan-card plan-card--wide" data-reveal>
+            <a href="/assets/img/city/elevation-front.png" target="_blank" rel="noopener">
+              <img
+                src="/assets/img/city/elevation-front.png"
+                width="2000" height="386"
+                alt="Street elevation BT-02: the two-storey front with the Casa Bella sign, stone-clad towers and louvred windows."
+                loading="lazy" decoding="async" />
+            </a>
+            <figcaption>Street elevation (voorgevel) BT-02 · scale 1:100</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -487,6 +557,15 @@
                   of an hour, and the airport is about 20 minutes up the coast
                   road.
                 </p>
+                <figure class="location__img">
+                  <img
+                src="/assets/img/city/street.jpg"
+                srcset="/assets/img/city/street@800.jpg 800w, /assets/img/city/street.jpg 1600w"
+                sizes="(min-width: 900px) 46vw, 92vw"
+                width="1600" height="900"
+                alt="Street view of the building, its stone entrance tower and the parking court."
+                loading="lazy" decoding="async" />
+                </figure>
                 <p class="address">
                   <a
                     href="https://www.google.com/maps/search/?api=1&amp;query=C3VP%2B636%20San%20Nicolas%20Aruba"
