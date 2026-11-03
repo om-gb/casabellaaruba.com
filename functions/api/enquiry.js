@@ -30,6 +30,7 @@ const LIMITS = {
 const INTERESTS = {
   tower: "Buying at Casabella Tower",
   suites: "Staying at Casabella Suites",
+  city: "Buying at Casabella City",
   pipeline: "A project in development",
   land: "Bringing us a plot / partnership",
   other: "Something else"
@@ -109,9 +110,9 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "Please fill in the required fields." }, 400);
   }
 
-  // Both forms always submit an interest — a select on the umbrella page, a
-  // hidden field on Suites and Tower. A submission without one did not come
-  // from them, whatever its Origin header claims.
+  // Every form always submits an interest — a select on the umbrella page, a
+  // hidden field on Suites, City and Tower. A submission without one did not
+  // come from them, whatever its Origin header claims.
   if (!Object.hasOwn(INTERESTS, interest)) {
     console.error("enquiry: rejected — unknown interest " + JSON.stringify(interest));
     return json({ ok: false, error: "That submission could not be accepted." }, 400);

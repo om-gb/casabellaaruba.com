@@ -55,7 +55,34 @@ markup is in git history if you want it back.
 - **Phone.** `+297 593 7285` is published here and on the Tower site. If that
   should stay Tower-sales only, remove the `<li>` from the contact list.
 
-## 3. Before it goes public
+## 3. Casabella City (`/city/`)
+
+The page is built from the sales brochure. Everything the brochure left blank
+is **left off the page**, not shown as a placeholder. To add each one:
+
+- **Price list by unit.** The brochure table had only dummy rows. When real
+  units, areas and prices exist, add a table to the `#pricing` section; until
+  then the page shows "from $309,000" and asks people to request the list.
+- **Payment percentages.** Only the 10% deposit is known. Title transfer,
+  foundation, structure/roof and completion read "Instalment" / "Balance" in
+  the `.milestones` list.
+- **HOA per month** — not shown.
+- **Apartment areas** — indoor m², outdoor (gallery) m² and bedroom 2 size.
+  Add rows to the `.unit` facts list.
+- **Specs with no value yet** — countertop and cabinetry, appliance brands,
+  wall and floor tile, flooring, air conditioning, furnished or not.
+- **Parking spaces** — the number is not given.
+- **Drawings.** The floor plan (BT-01), site layout (BT-03) and street
+  elevation (BT-02), plus brochure photos 1, 3 and 6, were not supplied. The
+  page uses the seven renders in `assets/img/city/`.
+- **Sales phone and website.** The brochure had placeholders; the page lists
+  `sales@casabellaaruba.com` and the enquiry form.
+- **Developer name.** The brochure says "Casa Bella Development"; the page says
+  Casabella Aruba to match the rest of the site. Change the `Developer` row in
+  `#introduction` if the legal name should show.
+- **Street address.** Only the plus code C3VP+636 is published.
+
+## 4. Before it goes public
 
 - Confirm the footer disclaimer with counsel — renders are artist impressions,
   areas and prices indicative.
