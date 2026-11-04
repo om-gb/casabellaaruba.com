@@ -67,10 +67,12 @@ is **left off the page**, not shown as a placeholder. To add each one:
   foundation, structure/roof and completion read "Instalment" / "Balance" in
   the `.milestones` list.
 - **HOA per month** — not shown.
-- **Apartment areas** — total indoor m², outdoor (gallery) m² and the second
-  bedroom's m². Add rows to the `.unit` facts list. Kitchen & living (about
-  24 m²) and the main bedroom (about 18 m²) are worked out from the plan's
-  4.75 × 5.00 m and 4.75 × 3.75 m.
+- **Apartment areas** — measured from plan BT-01 (its 4.75 m bays give the
+  scale, and the brochure's two room sizes check out against it): whole
+  apartment about 77 m², kitchen & living 24, main bedroom 18, second bedroom
+  26, bath/closet/laundry with the hall 10. Measured to wall centre lines, so
+  they are gross figures; swap in the architect's net areas when available.
+  Outdoor (gallery) m² is still unknown.
 - **Specs with no value yet** — countertop and cabinetry, appliance brands,
   wall and floor tile, flooring, air conditioning, furnished or not.
 - **Parking spaces** — the number is not given.
