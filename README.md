@@ -89,7 +89,7 @@ tone with `tone-paper`, `tone-stone` or `tone-dusk` (dusk is the default).
 Its images live in `assets/img/city/` (shared with the TV pages): ten renders,
 each with an `@800` copy for phones, and the architect's drawings as PNGs on
 white — `plan-unit.png` (BT-01), `elevation-front.png` (BT-02) and
-`plan-site.png` (BT-03). Every image of the building is a render, and the page
+`plan-site.png` (BT-03), with the drawing labels cropped off. Every image of the building is a render, and the page
 says so beside each one. Brochure figures that are still blank — unit prices,
 the payment percentages, HOA — are left off rather than shown as zeros;
 `CONTENT.md` lists them.
