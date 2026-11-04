@@ -1121,6 +1121,16 @@ h2 em {
 }
 .address a { border-bottom: 1px solid var(--line-strong); }
 .address a:hover { color: var(--brass-400); border-color: var(--brass-400); }
+.address .address__code {
+  display: inline-block;
+  margin-top: 0.6rem;
+  border-bottom: 0;
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-400);
+}
 
 @media (max-width: 900px) {
   .amenities,
