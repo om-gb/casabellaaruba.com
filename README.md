@@ -18,6 +18,8 @@ casabellaaruba.com/
 ├── js/main.js        sticky header, mobile nav, reveal, project filter, form
 ├── assets/img/       hero, project cards, favicon, og-cover
 ├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
+├── suites/           Casabella Suites page at /suites/
+├── city/             Casabella City Apartments page at /city/
 ├── tv/               office TV slideshow at /tv/, live dashboard at /tv/live/
 ├── functions/api/    enquiry.js (form handler), live.js (dashboard news + rates)
 ├── _headers          cache + security headers
@@ -46,11 +48,11 @@ one `<article class="project">` block, and change:
 The filter buttons count the cards themselves and hide any stage with zero
 projects, so no other file needs touching.
 
-### Projects not announced yet
+### Projects in development
 
-There are none on the page right now. The `In development` filter button hides
-itself while its count is zero, so the stage reappears on its own the moment a
-card with `data-status="planning"` exists.
+Casabella City is the one `data-status="planning"` card, so the `In development`
+filter is showing. The button hides itself again if its count ever drops to
+zero.
 
 ## Placeholders
 
@@ -69,6 +71,28 @@ The complete Tower sales site lives at `/tower/`, with Spanish at
 `/tower/es/`. Its assets are namespaced under `/tower/assets/`, so they cannot
 collide with company-site imagery. Both company and Tower enquiry forms post to
 the shared Cloudflare Function at `/api/enquiry`.
+
+## City subpage
+
+`/city/` is the Casabella City Apartments page — 52 two-bedroom apartments in
+San Nicolas, pre-construction, completing Q4 2028. Its copy follows the sales
+brochure section for section. Same self-contained shape as `/suites/`: its own
+`city/css/styles.css` and `city/js/main.js`, and the form posts to
+`/api/enquiry` with `interest=city`.
+
+City keeps the Casabella type and header but takes its colours from the
+brochure: dusk blue for the dark bands, limestone and sandstone for the light
+ones, teal accents and rose italics. The palette is one block at the end of
+`city/css/styles.css` that redefines the shared tokens; each section picks a
+tone with `tone-paper`, `tone-stone` or `tone-dusk` (dusk is the default).
+
+Its images live in `assets/img/city/` (shared with the TV pages): ten renders,
+each with an `@800` copy for phones, and the architect's drawings as PNGs on
+white — `plan-unit.png` (BT-01), `elevation-front.png` (BT-02) and
+`plan-site.png` (BT-03). Every image of the building is a render, and the page
+says so beside each one. Brochure figures that are still blank — unit prices,
+the payment percentages, HOA — are left off rather than shown as zeros;
+`CONTENT.md` lists them.
 
 ## Office TV display
 
