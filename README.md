@@ -80,6 +80,12 @@ brochure section for section. Same self-contained shape as `/suites/`: its own
 `city/css/styles.css` and `city/js/main.js`, and the form posts to
 `/api/enquiry` with `interest=city`.
 
+City keeps the Casabella type and header but takes its colours from the
+brochure: dusk blue for the dark bands, limestone and sandstone for the light
+ones, teal accents and rose italics. The palette is one block at the end of
+`city/css/styles.css` that redefines the shared tokens; each section picks a
+tone with `tone-paper`, `tone-stone` or `tone-dusk` (dusk is the default).
+
 Its images live in `assets/img/city/` (shared with the TV pages): ten renders,
 each with an `@800` copy for phones, and the architect's drawings as PNGs on
 white — `plan-unit.png` (BT-01), `elevation-front.png` (BT-02) and

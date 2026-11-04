@@ -858,7 +858,6 @@ h2 em {
 
 /* --- Pergola section: a darker band, wide image then a pair ------------- */
 
-.section--dusk { background: var(--ink-800); }
 .pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -987,14 +986,14 @@ h2 em {
   position: absolute;
   left: var(--gap-sm);
   bottom: var(--gap-sm);
-  background: rgba(14, 13, 11, 0.78);
+  background: rgba(44, 42, 71, 0.8);
   backdrop-filter: blur(8px);
   padding: 0.35rem 0.7rem;
   border-radius: 100px;
   font-size: var(--step--1);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone-300);
+  color: #efeae4;
 }
 
 /* --- Specification columns --------------------------------------------- */
@@ -1143,3 +1142,121 @@ h2 em {
   .milestones li { grid-template-columns: 2rem minmax(0, 1fr); }
   .milestones span { grid-column: 2; }
 }
+
+/* ==========================================================================
+   Casabella City palette — taken from the City brochure.
+   The type, header and spacing stay Casabella; the colours are the
+   building's own: dusk sky for the dark bands, limestone render and
+   sandstone cladding for the light ones, the teal of the palm on the
+   entrance sign for accents, and the rose of the herringbone pavers for the
+   italic half of each headline.
+
+   Everything above reads its colours from tokens, so each tone just
+   redefines them. The page default is dusk; light sections opt in with
+   .tone-paper or .tone-stone.
+   ========================================================================== */
+
+:root {
+  /* Dusk — the default: hero, header, pergola band, enquiry, footer. */
+  --ink-900: #2c2a47;
+  --ink-800: #252340;
+  --ink-700: #34325a;
+  --ink-600: #3d3b66;
+  --line: rgba(239, 234, 228, 0.16);
+  --line-strong: rgba(239, 234, 228, 0.32);
+
+  --bone-100: #f5f2ee;
+  --bone-300: #e6e0d9;
+  --bone-500: #c3bdcd;
+  --bone-700: #a09aae;
+
+  /* Accent slots keep their old names so the shared rules need no edits. */
+  --brass-400: #8fdcd7;   /* accent text, button hover */
+  --brass-500: #6fcfc9;   /* buttons, rules */
+  --brass-600: #17807e;
+  --em: #e0aa9e;          /* italic half of headlines */
+}
+
+.tone-paper,
+.tone-stone {
+  --ink-900: #f5f2ee;     /* limestone render */
+  --ink-800: #ece6de;
+  --ink-700: #e3dbd0;
+  --ink-600: #d5cabd;
+  --line: rgba(39, 34, 54, 0.13);
+  --line-strong: rgba(39, 34, 54, 0.3);
+
+  --bone-100: #272236;
+  --bone-300: #272236;
+  --bone-500: #4f4a5c;
+  --bone-700: #625c6c;
+
+  --brass-400: #136c6a;
+  --brass-500: #17807e;
+  --brass-600: #0f5958;
+  --em: #a35f54;
+}
+
+.tone-stone {
+  --ink-900: #e9e1d6;     /* sandstone cladding */
+  --ink-800: #f5f2ee;     /* cards sit lighter, as in the brochure */
+  --line: rgba(39, 34, 54, 0.15);
+}
+
+.tone-dusk { --ink-800: #232141; }
+
+/* A token change does not recolour inherited text, so each tone sets its
+   own background and colour. */
+.tone-paper,
+.tone-stone,
+.tone-dusk {
+  background: var(--ink-900);
+  color: var(--bone-300);
+}
+.contact.tone-dusk { background: var(--ink-800); }
+
+/* Tones meet edge to edge; a hairline only between two of the same. */
+.section[class*="tone-"] { border-top: 0; }
+.tone-paper + .tone-paper,
+.tone-stone + .tone-stone { border-top: 1px solid var(--line); }
+
+h1 em,
+h2 em { color: var(--em); }
+
+/* Solid buttons: white on teal in light sections, ink on aqua in dusk. */
+.btn--solid { color: var(--ink-900); }
+.tone-paper .btn--solid,
+.tone-stone .btn--solid { color: #fff; }
+.tone-paper .btn--solid:hover,
+.tone-stone .btn--solid:hover {
+  background: var(--brass-600);
+  border-color: var(--brass-600);
+  color: #fff;
+}
+
+/* Hard-coded ink in the shared header, hero and mobile menu, in dusk. */
+.site-header.is-stuck { background: rgba(44, 42, 71, 0.92); }
+.hero::after {
+  background: linear-gradient(
+    180deg,
+    rgba(44, 42, 71, 0.7) 0%,
+    rgba(44, 42, 71, 0.22) 26%,
+    rgba(44, 42, 71, 0.62) 58%,
+    rgba(44, 42, 71, 0.9) 86%,
+    var(--ink-900) 100%
+  );
+}
+@media (max-width: 760px) {
+  .nav { background: rgba(44, 42, 71, 0.97); }
+}
+
+/* Drawings: white cards with a hairline, so they hold their edge on
+   limestone. */
+.plan-card { border: 1px solid var(--line); }
+.tone-paper .plan-card figcaption,
+.tone-stone .plan-card figcaption { color: var(--bone-700); }
+
+/* The milestone numbers and drive minutes take the rose, like the
+   brochure's figures; labels stay teal. */
+.tone-paper .milestones strong,
+.tone-stone .drives strong { color: var(--em); }
