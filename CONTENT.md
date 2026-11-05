@@ -90,17 +90,24 @@ is **left off the page**, not shown as a placeholder. To add each one:
 
 ## Casabella Suites II (`/suites-ii/`)
 
-Deliberately minimal: the sunset exterior render as the hero, a six-picture
-gallery (twin room, bedroom, desk & TV, seating corner, wardrobe/coffee,
-entrance & parking), a line saying it sits next to Casabella Suites, and the
-enquiry form. The only building fact stated is what the render shows: two
-floors of suites over covered parking with a roof terrace — correct it if the
-drawings change.
-It borrows `/suites/css/styles.css` and `/suites/js/main.js`, so a style change
-there changes both pages. Enquiries arrive as "Staying at Casabella Suites"
-with page "Suites II · San Nicolas".
+Kept deliberately vague. Facts on the page come from the architect's binder
+(ZenArch, project 2026A-003, rev. Oct 15 2026): Pastoor Hendrickstraat 106,
+two floors of one- and two-bedroom suites over covered ground-floor parking,
+balconies, built-in closets, lift and stairs, roof terrace.
 
-Still open, add when known: number of suites and layouts, street address,
-amenities, opening date, real photos once built (drop them in `suites-ii/assets/img/` and
-add a `<figure>` to the gallery). Not yet on the homepage project grid — only
-in the footer.
+**Do not add:** the number of suites, the number of parking spaces, or the
+floor areas (they let someone work out the count). The owner wants the size
+kept private. Do not publish the drawings either — the binder marks them as
+the architect's copyright.
+
+Pictures: the sunset exterior render is the hero and share image; the gallery
+has six (twin room, bedroom, desk & TV, seating corner, wardrobe/coffee,
+entrance & parking). The "seating corner" one looks like a real photograph
+rather than a render — confirm it is ours to use.
+
+The page borrows `/suites/css/styles.css` and `/suites/js/main.js`, so a style
+change there changes both pages. Enquiries arrive as "Staying at Casabella
+Suites" with page "Suites II · San Nicolas".
+
+Still open: opening date, amenities, real photos once built. Not yet on the
+homepage project grid — only in the footer.
