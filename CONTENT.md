@@ -91,7 +91,7 @@ is **left off the page**, not shown as a placeholder. To add each one:
 ## Casabella Suites II (`/suites-ii/`)
 
 Kept deliberately vague. Facts on the page come from the architect's binder
-(ZenArch, project 2026A-003, rev. Oct 15 2026): Pastoor Hendrickstraat 106,
+(ZenArch, project 2026A-003, rev. Oct 15 2026): Pastoor Hendrikstraat 106 (the plans spell it "Hendrickstraat"; the site uses "Hendrikstraat"),
 two floors of one- and two-bedroom suites over covered ground-floor parking,
 balconies, built-in closets, lift and stairs, roof terrace.
 
@@ -103,7 +103,7 @@ the architect's copyright.
 Pictures: the sunset exterior render is the hero and share image; the gallery
 has six (twin room, bedroom, desk & TV, seating corner, wardrobe/coffee,
 entrance & parking). The "seating corner" one looks like a real photograph
-rather than a render — confirm it is ours to use.
+rather than a render; the owner confirmed it stays.
 
 The page borrows `/suites/css/styles.css` and `/suites/js/main.js`, so a style
 change there changes both pages. Enquiries arrive as "Staying at Casabella
