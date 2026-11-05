@@ -413,6 +413,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--radius);
 }
 .split h2 { font-size: var(--step-3); margin-bottom: var(--gap-sm); }
+.section > .shell > h2 { font-size: var(--step-3); margin-bottom: var(--gap-sm); }
 .split__body { color: var(--bone-500); }
 
 /* --- Mission ------------------------------------------------------------ */

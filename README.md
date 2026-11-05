@@ -19,6 +19,7 @@ casabellaaruba.com/
 ├── assets/img/       hero, project cards, favicon, og-cover
 ├── tower/            Casabella Tower microsite at /tower/ (EN + ES)
 ├── suites/           Casabella Suites page at /suites/
+├── suites-ii/        Casabella Suites II page at /suites-ii/ (uses /suites/ css + js)
 ├── city/             Casabella City Apartments page at /city/
 ├── tv/               office TV slideshow at /tv/, live dashboard at /tv/live/
 ├── functions/api/    enquiry.js (form handler), live.js (dashboard news + rates)

@@ -87,3 +87,16 @@ is **left off the page**, not shown as a placeholder. To add each one:
   linked from the footer is the low-effort way to be correct about it.
 - The mission section claims solar on every building. True of both built
   projects today — keep it true of the next three.
+
+## Casabella Suites II (`/suites-ii/`)
+
+Deliberately minimal: three pictures (twin room, bedroom, wardrobe/coffee
+corner), a line saying it sits next to Casabella Suites, and the enquiry form.
+It borrows `/suites/css/styles.css` and `/suites/js/main.js`, so a style change
+there changes both pages. Enquiries arrive as "Staying at Casabella Suites"
+with page "Suites II · San Nicolas".
+
+Still open, add when known: number of suites and layouts, street address,
+amenities, opening date, more photos (drop them in `suites-ii/assets/img/` and
+add a `<figure>` to the gallery). Not yet on the homepage project grid — only
+in the footer.
