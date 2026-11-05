@@ -316,16 +316,40 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: absolute;
   inset: 0;
   z-index: -1;
-  /* The ramp has to be dark from ~55% down, where the headline, tagline and
-     eyebrow all sit — the render is brightest exactly there. */
-  background: linear-gradient(
-    180deg,
-    rgba(14, 13, 11, 0.72) 0%,
-    rgba(14, 13, 11, 0.30) 26%,
-    rgba(14, 13, 11, 0.68) 58%,
-    rgba(14, 13, 11, 0.9) 86%,
-    var(--ink-900) 100%
-  );
+  /* Wide screens: the headline sits on the left and the Casa Bella sign on
+     the right of the photo, so shade mostly from the left — the text stays
+     legible and the building and sign stay bright. The vertical ramp keeps
+     the header readable and fades the bottom into the page. */
+  background:
+    linear-gradient(
+      90deg,
+      rgba(14, 13, 11, 0.8) 0%,
+      rgba(14, 13, 11, 0.6) 35%,
+      rgba(14, 13, 11, 0) 62%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(14, 13, 11, 0.55) 0%,
+      rgba(14, 13, 11, 0) 20%,
+      rgba(14, 13, 11, 0) 72%,
+      rgba(14, 13, 11, 0.85) 94%,
+      var(--ink-900) 100%
+    );
+}
+/* Narrow screens: the text spans the full width, so the ramp has to be dark
+   from ~45% down; the photo shifts right to keep the sign in frame. */
+@media (max-width: 760px) {
+  .hero__media img { object-position: 78% center; }
+  .hero::after {
+    background: linear-gradient(
+      180deg,
+      rgba(14, 13, 11, 0.6) 0%,
+      rgba(14, 13, 11, 0.15) 22%,
+      rgba(14, 13, 11, 0.7) 50%,
+      rgba(14, 13, 11, 0.9) 80%,
+      var(--ink-900) 100%
+    );
+  }
 }
 /* Wide enough for the display headline to breathe — the tagline sets its own
    narrower measure below. A ch-based cap here is sized by the body font and
@@ -821,8 +845,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   object-fit: cover;
   border-radius: var(--radius);
 }
-.gallery figure:first-child { grid-column: span 2; }
-.gallery figure:first-child img { aspect-ratio: 3 / 2; height: 100%; }
+/* The lead photo spans two columns and two rows, so the two tiles beside it
+   stack to its exact height (no empty space under the second tile). The image is
+   taken out of flow so it fills the area rather than setting the row height. */
+.gallery figure:first-child { grid-column: span 2; grid-row: span 2; }
+.gallery figure:first-child img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+}
 .gallery figcaption {
   position: absolute;
   left: var(--gap-sm);
@@ -877,7 +909,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .types,
   .amenities { grid-template-columns: 1fr; }
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gallery figure:first-child { grid-column: span 2; }
+  .gallery figure:first-child { grid-column: span 2; grid-row: auto; }
+  .gallery figure:first-child img { position: static; aspect-ratio: 3 / 2; }
 }
 
 @media (max-width: 560px) {
