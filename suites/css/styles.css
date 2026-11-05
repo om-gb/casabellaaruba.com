@@ -821,8 +821,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   object-fit: cover;
   border-radius: var(--radius);
 }
-.gallery figure:first-child { grid-column: span 2; }
-.gallery figure:first-child img { aspect-ratio: 3 / 2; height: 100%; }
+/* The lead photo spans two columns and two rows, so the two tiles beside it
+   stack to its exact height (no empty space under the second tile). The image is
+   taken out of flow so it fills the area rather than setting the row height. */
+.gallery figure:first-child { grid-column: span 2; grid-row: span 2; }
+.gallery figure:first-child img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+}
 .gallery figcaption {
   position: absolute;
   left: var(--gap-sm);
@@ -877,7 +885,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .types,
   .amenities { grid-template-columns: 1fr; }
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gallery figure:first-child { grid-column: span 2; }
+  .gallery figure:first-child { grid-column: span 2; grid-row: auto; }
+  .gallery figure:first-child img { position: static; aspect-ratio: 3 / 2; }
 }
 
 @media (max-width: 560px) {
