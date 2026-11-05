@@ -87,3 +87,29 @@ is **left off the page**, not shown as a placeholder. To add each one:
   linked from the footer is the low-effort way to be correct about it.
 - The mission section claims solar on every building. True of both built
   projects today — keep it true of the next three.
+
+## Casabella Suites II (`/suites-ii/`)
+
+Kept deliberately vague. Facts on the page come from the architect's binder
+(ZenArch, project 2026A-003, rev. Oct 15 2026): Pastoor Hendrikstraat 106 (the plans spell it "Hendrickstraat"; the site uses "Hendrikstraat"),
+two floors of one- and two-bedroom suites over covered ground-floor parking,
+balconies, built-in closets, lift and stairs, roof terrace.
+
+**Do not add:** the number of suites, the number of parking spaces, or the
+floor areas (they let someone work out the count). The owner wants the size
+kept private. Do not publish the drawings either — the binder marks them as
+the architect's copyright.
+
+Pictures: the sunset exterior render is the hero and share image; the gallery
+has six (twin room, bedroom, desk & TV, seating corner, wardrobe/coffee,
+entrance & parking), and an aerial render of the roof terrace has its own
+section; its text mentions the bar and the solar panels on the cabanas,
+which the owner confirmed. The "seating corner" one looks like a real photograph
+rather than a render; the owner confirmed it stays.
+
+The page borrows `/suites/css/styles.css` and `/suites/js/main.js`, so a style
+change there changes both pages. Enquiries arrive as "Staying at Casabella
+Suites" with page "Suites II · San Nicolas".
+
+Still open: opening date, amenities, real photos once built. Not yet on the
+homepage project grid — only in the footer.
