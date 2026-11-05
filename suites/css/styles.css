@@ -329,17 +329,18 @@ ul { margin: 0; padding: 0; list-style: none; }
     ),
     linear-gradient(
       180deg,
-      rgba(14, 13, 11, 0.55) 0%,
-      rgba(14, 13, 11, 0) 20%,
+      rgba(14, 13, 11, 0.78) 0%,
+      rgba(14, 13, 11, 0.35) 14%,
+      rgba(14, 13, 11, 0) 28%,
       rgba(14, 13, 11, 0) 72%,
       rgba(14, 13, 11, 0.85) 94%,
       var(--ink-900) 100%
     );
 }
 /* Narrow screens: the text spans the full width, so the ramp has to be dark
-   from ~45% down; the photo shifts right to keep the sign in frame. */
+   from ~45% down; the photo is nudged right of centre to keep the sign in frame. */
 @media (max-width: 760px) {
-  .hero__media img { object-position: 78% center; }
+  .hero__media img { object-position: 56% center; }
   .hero::after {
     background: linear-gradient(
       180deg,
