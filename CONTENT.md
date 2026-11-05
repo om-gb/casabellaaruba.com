@@ -102,7 +102,8 @@ the architect's copyright.
 
 Pictures: the sunset exterior render is the hero and share image; the gallery
 has six (twin room, bedroom, desk & TV, seating corner, wardrobe/coffee,
-entrance & parking). The "seating corner" one looks like a real photograph
+entrance & parking), and an aerial render of the roof terrace has its own
+section. The "seating corner" one looks like a real photograph
 rather than a render; the owner confirmed it stays.
 
 The page borrows `/suites/css/styles.css` and `/suites/js/main.js`, so a style
