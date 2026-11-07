@@ -35,6 +35,16 @@
       sets the label in the bottom bar; data-seconds overrides the default
       slide length. The progress bar and counter count the slides themselves.
     -->
+    <script>
+      // TEMPORARY: the office TV is showing Casabella City only. Change
+      // "city" to "all" to bring back the full four-project show;
+      // /tv/?show=all shows it without changing this file. Set here, before
+      // first paint, so the City colours apply from the loading screen on.
+      (function () {
+        var m = /[?&]show=([^&]*)/.exec(location.search);
+        document.documentElement.setAttribute("data-show", m ? decodeURIComponent(m[1]) : "city");
+      })();
+    </script>
     <style>
 
       *,
@@ -1170,6 +1180,326 @@
         text-transform: uppercase;
         color: rgba(233, 224, 207, 0.55);
       }
+
+      /* ======================================================================
+         Casabella City palette — matches /city/ (city/css/styles.css), which
+         takes its colours from the City brochure: dusk sky for dark slides,
+         limestone and sandstone for light ones, the teal of the entrance-sign
+         palm for accents, and the rose of the pavers for the italic half of
+         each headline. Applies only while the City show is playing.
+         ====================================================================== */
+
+      html[data-show="city"] body,
+      html[data-show="city"] .loader {
+        background: #2c2a47;
+        color: #e6e0d9;
+      }
+
+      html[data-show="city"] .media {
+        background: #252340;
+      }
+
+      html[data-show="city"] .slide--full .media::after {
+        background:
+          linear-gradient(180deg, rgba(44, 42, 71, 0.62) 0%, rgba(44, 42, 71, 0) 24%),
+          linear-gradient(0deg, rgba(44, 42, 71, 0.92) 0%, rgba(44, 42, 71, 0.48) 34%, rgba(44, 42, 71, 0) 60%),
+          linear-gradient(90deg, rgba(44, 42, 71, 0.55) 0%, rgba(44, 42, 71, 0) 55%);
+      }
+
+      html[data-show="city"] .slide--full.right .media::after {
+        background:
+          linear-gradient(180deg, rgba(44, 42, 71, 0.62) 0%, rgba(44, 42, 71, 0) 24%),
+          linear-gradient(0deg, rgba(44, 42, 71, 0.92) 0%, rgba(44, 42, 71, 0.48) 34%, rgba(44, 42, 71, 0) 60%),
+          linear-gradient(270deg, rgba(44, 42, 71, 0.6) 0%, rgba(44, 42, 71, 0) 55%);
+      }
+
+      html[data-show="city"] .slide--split,
+      html[data-show="city"] .slide--grid {
+        background: #2c2a47;
+      }
+
+      html[data-show="city"] .panel {
+        background:
+          radial-gradient(120% 80% at 100% 0%, rgba(143, 220, 215, 0.08), transparent 60%),
+          #2c2a47;
+      }
+
+      html[data-show="city"] .slide--text {
+        background:
+          radial-gradient(70% 90% at 85% 10%, rgba(143, 220, 215, 0.1), transparent 60%),
+          #2c2a47;
+      }
+
+      html[data-show="city"] .slide--close {
+        background:
+          radial-gradient(60% 70% at 50% 40%, rgba(143, 220, 215, 0.12), transparent 70%),
+          #252340;
+      }
+
+      html[data-show="city"] .slide--text .panel,
+      html[data-show="city"] .slide--close .panel {
+        background: none;
+      }
+
+      html[data-show="city"] .eyebrow,
+      html[data-show="city"] .list--num li::before,
+      html[data-show="city"] .steps span,
+      html[data-show="city"] .unit__price {
+        color: #8fdcd7;
+      }
+
+      html[data-show="city"] .title,
+      html[data-show="city"] .stats dd,
+      html[data-show="city"] .unit__key,
+      html[data-show="city"] .steps b {
+        color: #f5f2ee;
+      }
+
+      html[data-show="city"] .title em {
+        color: #e0aa9e;
+      }
+
+      html[data-show="city"] .lede,
+      html[data-show="city"] .unit__meta {
+        color: #c3bdcd;
+      }
+
+      html[data-show="city"] .stats dt,
+      html[data-show="city"] .fineprint,
+      html[data-show="city"] .list li span:last-child,
+      html[data-show="city"] .contact span {
+        color: #a09aae;
+      }
+
+      html[data-show="city"] .list li,
+      html[data-show="city"] .contact {
+        color: #e6e0d9;
+      }
+
+      html[data-show="city"] .stats,
+      html[data-show="city"] .steps,
+      html[data-show="city"] .contact {
+        border-top-color: rgba(239, 234, 228, 0.32);
+      }
+
+      html[data-show="city"] .list,
+      html[data-show="city"] .list li,
+      html[data-show="city"] .steps li + li,
+      html[data-show="city"] .unit {
+        border-color: rgba(239, 234, 228, 0.16);
+      }
+
+      html[data-show="city"] .unit {
+        background: rgba(239, 234, 228, 0.04);
+      }
+
+      /* Drive minutes take the rose, as on /city/. */
+      html[data-show="city"] .steps--times b {
+        color: #e0aa9e;
+      }
+
+      html[data-show="city"] .steps--times span {
+        color: #e6e0d9;
+      }
+
+      html[data-show="city"] .slide--grid .tag {
+        background: rgba(44, 42, 71, 0.78);
+        color: #e6e0d9;
+      }
+
+      html[data-show="city"] .render-note {
+        color: rgba(239, 234, 228, 0.66);
+      }
+
+      html[data-show="city"] svg g[stroke] {
+        stroke: #8fdcd7;
+      }
+
+      html[data-show="city"] .loader__fill {
+        background: #8fdcd7;
+      }
+
+      html[data-show="city"] .loader__track {
+        background: rgba(239, 234, 228, 0.16);
+      }
+
+      html[data-show="city"] .loader__text {
+        color: #a09aae;
+      }
+
+      /* Overlay: brand, clock, weather, progress. */
+      html[data-show="city"] .hud::before {
+        background: linear-gradient(180deg, rgba(44, 42, 71, 0.62), rgba(44, 42, 71, 0));
+      }
+
+      html[data-show="city"] .hud::after {
+        background: linear-gradient(0deg, rgba(44, 42, 71, 0.72), rgba(44, 42, 71, 0));
+      }
+
+      html[data-show="city"] .brand small,
+      html[data-show="city"] .clock__time .ampm,
+      html[data-show="city"] .weather__icon,
+      html[data-show="city"] .paused-pill {
+        color: #8fdcd7;
+      }
+
+      html[data-show="city"] .info {
+        background: rgba(44, 42, 71, 0.62);
+        border-color: rgba(239, 234, 228, 0.16);
+      }
+
+      html[data-show="city"] .weather {
+        border-right-color: rgba(239, 234, 228, 0.16);
+      }
+
+      html[data-show="city"] .clock__date,
+      html[data-show="city"] .weather__desc {
+        color: #c3bdcd;
+      }
+
+      html[data-show="city"] .weather__meta,
+      html[data-show="city"] .weather__temp small,
+      html[data-show="city"] .zones {
+        color: #a09aae;
+      }
+
+      html[data-show="city"] .bottom {
+        color: #c3bdcd;
+      }
+
+      html[data-show="city"] .project-label::before {
+        background: #8fdcd7;
+      }
+
+      html[data-show="city"] .progress i {
+        background: rgba(239, 234, 228, 0.3);
+      }
+
+      /* Light slides: limestone (paper) and sandstone (stone). */
+      html[data-show="city"] .slide--text.tone-paper {
+        background: #f5f2ee;
+      }
+
+      html[data-show="city"] .slide--text.tone-stone {
+        background: #e9e1d6;
+      }
+
+      html[data-show="city"] .tone-paper .eyebrow,
+      html[data-show="city"] .tone-stone .eyebrow,
+      html[data-show="city"] .tone-paper .steps span,
+      html[data-show="city"] .tone-stone .steps span {
+        color: #136c6a;
+      }
+
+      html[data-show="city"] .tone-paper .title,
+      html[data-show="city"] .tone-stone .title,
+      html[data-show="city"] .tone-paper .unit__key,
+      html[data-show="city"] .tone-stone .unit__key,
+      html[data-show="city"] .tone-paper .steps b,
+      html[data-show="city"] .tone-stone .steps b {
+        color: #272236;
+      }
+
+      html[data-show="city"] .tone-paper .title em,
+      html[data-show="city"] .tone-stone .title em {
+        color: #a35f54;
+      }
+
+      html[data-show="city"] .tone-paper .lede,
+      html[data-show="city"] .tone-stone .lede,
+      html[data-show="city"] .tone-paper .unit__meta,
+      html[data-show="city"] .tone-stone .unit__meta {
+        color: #4f4a5c;
+      }
+
+      html[data-show="city"] .tone-paper .fineprint,
+      html[data-show="city"] .tone-stone .fineprint {
+        color: #625c6c;
+      }
+
+      html[data-show="city"] .tone-paper .steps,
+      html[data-show="city"] .tone-stone .steps {
+        border-top-color: rgba(39, 34, 54, 0.3);
+      }
+
+      html[data-show="city"] .tone-paper .steps li + li,
+      html[data-show="city"] .tone-stone .steps li + li,
+      html[data-show="city"] .tone-paper .unit,
+      html[data-show="city"] .tone-stone .unit {
+        border-color: rgba(39, 34, 54, 0.15);
+      }
+
+      /* Cards sit lighter than the sandstone, as in the brochure. */
+      html[data-show="city"] .tone-stone .unit {
+        background: #f5f2ee;
+      }
+
+      html[data-show="city"] .tone-paper .unit {
+        background: #ece6de;
+      }
+
+      /* Overlay over a light slide: dark type, no dark fades. */
+      html[data-show="city"].on-light .hud::before,
+      html[data-show="city"].on-light .hud::after {
+        background: none;
+      }
+
+      html[data-show="city"].on-light .brand {
+        color: #272236;
+        text-shadow: none;
+      }
+
+      html[data-show="city"].on-light .brand small,
+      html[data-show="city"].on-light .clock__time .ampm,
+      html[data-show="city"].on-light .weather__icon,
+      html[data-show="city"].on-light .paused-pill {
+        color: #136c6a;
+      }
+
+      html[data-show="city"].on-light svg g[stroke] {
+        stroke: #17807e;
+      }
+
+      html[data-show="city"].on-light .info {
+        background: rgba(255, 255, 255, 0.5);
+        border-color: rgba(39, 34, 54, 0.13);
+      }
+
+      html[data-show="city"].on-light .weather {
+        border-right-color: rgba(39, 34, 54, 0.13);
+      }
+
+      html[data-show="city"].on-light .clock__time,
+      html[data-show="city"].on-light .weather__temp,
+      html[data-show="city"].on-light .zones b,
+      html[data-show="city"].on-light .project-label {
+        color: #272236;
+      }
+
+      html[data-show="city"].on-light .clock__date,
+      html[data-show="city"].on-light .weather__desc,
+      html[data-show="city"].on-light .bottom {
+        color: #4f4a5c;
+      }
+
+      html[data-show="city"].on-light .weather__meta,
+      html[data-show="city"].on-light .weather__temp small,
+      html[data-show="city"].on-light .zones {
+        color: #625c6c;
+        text-shadow: none;
+      }
+
+      html[data-show="city"].on-light .project-label::before {
+        background: #17807e;
+      }
+
+      html[data-show="city"].on-light .progress i {
+        background: rgba(39, 34, 54, 0.2);
+      }
+
+      html[data-show="city"].on-light .progress b {
+        background: #272236;
+      }
     </style>
   </head>
   <body>
@@ -1187,7 +1517,7 @@
         <span class="render-note">Artist impression</span>
         <div class="copy">
           <p class="eyebrow">Watapana Gezag · San Nicolas</p>
-          <h1 class="title">Casabella City Apartments.</h1>
+          <h1 class="title">Casabella City <em>Apartments.</em></h1>
           <p class="lede">
             A walled courtyard community with a resort pool at its heart.
             Fifty-two apartments on two storeys.
@@ -1208,7 +1538,7 @@
         <span class="render-note">Artist impression</span>
         <div class="copy">
           <p class="eyebrow">The courtyard</p>
-          <h2 class="title">City living, turned inward.</h2>
+          <h2 class="title">City living, <em>turned inward.</em></h2>
           <p class="lede">
             From the street it is quiet stone and white render. Inside the
             walls you find palms, a lit pool and covered dining terraces.
@@ -1223,7 +1553,7 @@
         <span class="render-note">Artist impression</span>
         <div class="copy">
           <p class="eyebrow">Resort pool</p>
-          <h2 class="title">The pool is the centre of it all.</h2>
+          <h2 class="title">The pool is <em>the centre of it all.</em></h2>
           <p class="lede">
             A long pool with mosaic tile and a shallow lounging ledge runs down
             the middle of the courtyard, lined with loungers and parasols.
@@ -1237,7 +1567,7 @@
         </div>
         <div class="panel">
           <p class="eyebrow">On site</p>
-          <h2 class="title">Everything inside the walls.</h2>
+          <h2 class="title">Everything <em>inside the walls.</em></h2>
           <ul class="list list--num">
             <li>Resort pool with a lounging ledge</li>
             <li>Four BBQ pergolas with dining terraces</li>
@@ -1254,7 +1584,7 @@
         <span class="render-note">Artist impression</span>
         <div class="copy">
           <p class="eyebrow">Outdoor living</p>
-          <h2 class="title">Evenings under the pergolas.</h2>
+          <h2 class="title">Evenings under <em>the pergolas.</em></h2>
           <p class="lede">
             Timber pergolas with retractable shade canopies hold the shared
             grills and dining tables, close to every front door.
@@ -1274,7 +1604,7 @@
         </div>
         <div class="panel">
           <p class="eyebrow">Interiors</p>
-          <h2 class="title">Warm wood, soft stone.</h2>
+          <h2 class="title">Warm wood, <em>soft stone.</em></h2>
           <p class="lede">
             Walnut-toned panelling, terrazzo counters and concealed cove
             lighting give every room the same calm, warm finish.
@@ -1283,10 +1613,10 @@
         </div>
       </section>
 
-      <section class="slide slide--text" data-show="city" data-project="Casabella City" data-seconds="14">
+      <section class="slide slide--text tone-stone" data-show="city" data-project="Casabella City" data-seconds="14">
         <div class="panel">
           <p class="eyebrow">Inside the apartments</p>
-          <h2 class="title">Two bedrooms, one bathroom, 72 m².</h2>
+          <h2 class="title">Two bedrooms, one bathroom, <em>72 m².</em></h2>
           <div class="units">
             <div class="unit">
               <p class="unit__key">Kitchen</p>
@@ -1310,10 +1640,10 @@
         </div>
       </section>
 
-      <section class="slide slide--text" data-show="city" data-project="Casabella City" data-seconds="14">
+      <section class="slide slide--text tone-paper" data-show="city" data-project="Casabella City" data-seconds="14">
         <div class="panel">
           <p class="eyebrow">Availability &amp; pricing</p>
-          <h2 class="title">Starting at $325,000.</h2>
+          <h2 class="title">Starting at <em>$325,000.</em></h2>
           <p class="lede">
             52 apartments over two floors. Prices vary by floor and position
             around the courtyard. Sold pre-construction, with payments
@@ -1337,7 +1667,7 @@
         <span class="render-note">Artist impression</span>
         <div class="copy">
           <p class="eyebrow">Location · Watapana Gezag, San Nicolas</p>
-          <h2 class="title">Close to Aruba's best beaches.</h2>
+          <h2 class="title">Aruba's second city, <em>close to its best beaches.</em></h2>
           <ol class="steps steps--times">
             <li><b>7 min</b><span>Downtown San Nicolas</span></li>
             <li><b>9 min</b><span>Zeerovers</span></li>
@@ -1359,7 +1689,7 @@
             </g>
           </svg>
           <p class="eyebrow">Casabella City Apartments</p>
-          <h2 class="title">Ask for the price list.</h2>
+          <h2 class="title">Ask for <em>the price list.</em></h2>
           <div class="contact">
             <div><span>Web</span>casabellaaruba.com/city</div>
             <div><span>Email</span>sales@casabellaaruba.com</div>
@@ -1792,10 +2122,9 @@
 
         /* --- Slideshow --------------------------------------------------- */
 
-        // TEMPORARY: the office TV is showing Casabella City only. Set SHOW
-        // to "all" to bring back the full four-project show; /tv/?show=all
-        // shows it without changing this file.
-        var SHOW = param("show") || "city";
+        // Which show is playing is decided in <head> (see the TEMPORARY note
+        // there).
+        var SHOW = document.documentElement.getAttribute("data-show") || "all";
 
         // Drop the slides that are not part of this show before anything else
         // (preloading, progress bar, timing) sees them.
@@ -1851,6 +2180,11 @@
           bars[next].className = "now";
           bars[next].firstChild.style.webkitAnimationDuration = ms + "ms";
           bars[next].firstChild.style.animationDuration = ms + "ms";
+
+          // Light (limestone / sandstone) slides take dark overlay type.
+          var light = /\btone-(paper|stone)\b/.test(slide.className);
+          var root = document.documentElement;
+          root.className = root.className.replace(/\s*\bon-light\b/g, "") + (light ? " on-light" : "");
 
           label.textContent = slide.getAttribute("data-project") || "";
           counter.textContent = pad(next + 1) + " / " + pad(slides.length);
