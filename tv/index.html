@@ -1191,49 +1191,49 @@
 
       html[data-show="city"] body,
       html[data-show="city"] .loader {
-        background: #2c2a47;
+        background: #34325a;
         color: #e6e0d9;
       }
 
       html[data-show="city"] .media {
-        background: #252340;
+        background: #3d3b66;
       }
 
       html[data-show="city"] .slide--full .media::after {
         background:
-          linear-gradient(180deg, rgba(44, 42, 71, 0.62) 0%, rgba(44, 42, 71, 0) 24%),
-          linear-gradient(0deg, rgba(44, 42, 71, 0.92) 0%, rgba(44, 42, 71, 0.48) 34%, rgba(44, 42, 71, 0) 60%),
-          linear-gradient(90deg, rgba(44, 42, 71, 0.55) 0%, rgba(44, 42, 71, 0) 55%);
+          linear-gradient(180deg, rgba(44, 42, 71, 0.38) 0%, rgba(44, 42, 71, 0) 20%),
+          linear-gradient(0deg, rgba(44, 42, 71, 0.78) 0%, rgba(44, 42, 71, 0.28) 30%, rgba(44, 42, 71, 0) 50%),
+          linear-gradient(90deg, rgba(44, 42, 71, 0.32) 0%, rgba(44, 42, 71, 0) 50%);
       }
 
       html[data-show="city"] .slide--full.right .media::after {
         background:
-          linear-gradient(180deg, rgba(44, 42, 71, 0.62) 0%, rgba(44, 42, 71, 0) 24%),
-          linear-gradient(0deg, rgba(44, 42, 71, 0.92) 0%, rgba(44, 42, 71, 0.48) 34%, rgba(44, 42, 71, 0) 60%),
-          linear-gradient(270deg, rgba(44, 42, 71, 0.6) 0%, rgba(44, 42, 71, 0) 55%);
+          linear-gradient(180deg, rgba(44, 42, 71, 0.38) 0%, rgba(44, 42, 71, 0) 20%),
+          linear-gradient(0deg, rgba(44, 42, 71, 0.78) 0%, rgba(44, 42, 71, 0.28) 30%, rgba(44, 42, 71, 0) 50%),
+          linear-gradient(270deg, rgba(44, 42, 71, 0.36) 0%, rgba(44, 42, 71, 0) 50%);
       }
 
       html[data-show="city"] .slide--split,
       html[data-show="city"] .slide--grid {
-        background: #2c2a47;
+        background: #34325a;
       }
 
       html[data-show="city"] .panel {
         background:
           radial-gradient(120% 80% at 100% 0%, rgba(143, 220, 215, 0.08), transparent 60%),
-          #2c2a47;
+          #34325a;
       }
 
       html[data-show="city"] .slide--text {
         background:
           radial-gradient(70% 90% at 85% 10%, rgba(143, 220, 215, 0.1), transparent 60%),
-          #2c2a47;
+          #34325a;
       }
 
       html[data-show="city"] .slide--close {
         background:
           radial-gradient(60% 70% at 50% 40%, rgba(143, 220, 215, 0.12), transparent 70%),
-          #252340;
+          #3d3b66;
       }
 
       html[data-show="city"] .slide--text .panel,
@@ -1329,11 +1329,11 @@
 
       /* Overlay: brand, clock, weather, progress. */
       html[data-show="city"] .hud::before {
-        background: linear-gradient(180deg, rgba(44, 42, 71, 0.62), rgba(44, 42, 71, 0));
+        background: linear-gradient(180deg, rgba(44, 42, 71, 0.4), rgba(44, 42, 71, 0));
       }
 
       html[data-show="city"] .hud::after {
-        background: linear-gradient(0deg, rgba(44, 42, 71, 0.72), rgba(44, 42, 71, 0));
+        background: linear-gradient(0deg, rgba(44, 42, 71, 0.5), rgba(44, 42, 71, 0));
       }
 
       html[data-show="city"] .brand small,
@@ -1500,6 +1500,50 @@
       html[data-show="city"].on-light .progress b {
         background: #272236;
       }
+
+      /* Brightening pass: more limestone slides, as on /city/. Split and grid
+         slides keep their photos; only the copy panel turns light. */
+      html[data-show="city"] .tone-paper .panel {
+        background: #f5f2ee;
+      }
+
+      html[data-show="city"] .slide--close.tone-paper {
+        background: #f5f2ee;
+      }
+
+      html[data-show="city"] .slide--close.tone-paper .panel {
+        background: none;
+      }
+
+      html[data-show="city"] .tone-paper .list,
+      html[data-show="city"] .tone-paper .list li,
+      html[data-show="city"] .tone-paper .contact {
+        border-color: rgba(39, 34, 54, 0.15);
+        color: #272236;
+      }
+
+      html[data-show="city"] .tone-paper .list--num li::before {
+        color: #136c6a;
+      }
+
+      html[data-show="city"] .tone-paper .contact span {
+        color: #625c6c;
+      }
+
+      /* With lighter shading, a soft halo keeps photo captions crisp. */
+      html[data-show="city"] .slide--full .copy {
+        text-shadow: 0 1px 2px rgba(44, 42, 71, 0.55), 0 0 2.6vh rgba(44, 42, 71, 0.6);
+      }
+
+      /* Photos keep the bottom bar readable where it runs over them. */
+      html[data-show="city"].on-light .bottom {
+        text-shadow: 0 0 1.2vh rgba(245, 242, 238, 0.9);
+      }
+
+      html[data-show="city"].on-light .slide--grid .tag {
+        background: rgba(245, 242, 238, 0.86);
+        color: #272236;
+      }
     </style>
   </head>
   <body>
@@ -1519,7 +1563,7 @@
           <p class="eyebrow">Watapana Gezag · San Nicolas</p>
           <h1 class="title">Casabella City <em>Apartments.</em></h1>
           <p class="lede">
-            A walled courtyard community with a resort pool at its heart.
+            A gated courtyard community with a resort pool at its heart.
             Fifty-two apartments on two storeys.
           </p>
           <dl class="stats">
@@ -1561,17 +1605,17 @@
         </div>
       </section>
 
-      <section class="slide slide--split flip" data-show="city" data-project="Casabella City" data-seconds="12">
+      <section class="slide slide--split flip tone-paper" data-show="city" data-project="Casabella City" data-seconds="12">
         <div class="media">
           <img src="/assets/img/city/pool-view.jpg" alt="" />
         </div>
         <div class="panel">
           <p class="eyebrow">On site</p>
-          <h2 class="title">Everything <em>inside the walls.</em></h2>
+          <h2 class="title">Everything <em>inside the gates.</em></h2>
           <ul class="list list--num">
             <li>Resort pool with a lounging ledge</li>
             <li>Four BBQ pergolas with dining terraces</li>
-            <li>Walled, landscaped grounds</li>
+            <li>Gated, landscaped grounds</li>
             <li>On-site parking court</li>
           </ul>
         </div>
@@ -1592,7 +1636,7 @@
         </div>
       </section>
 
-      <section class="slide slide--grid three" data-show="city" data-project="Casabella City" data-seconds="12">
+      <section class="slide slide--grid three tone-paper" data-show="city" data-project="Casabella City" data-seconds="12">
         <div class="media">
           <img src="/assets/img/city/living.jpg" alt="" /><span class="tag">Kitchen &amp; living</span>
         </div>
@@ -1651,9 +1695,8 @@
           </p>
           <ol class="steps">
             <li><b>Signing</b><span>10% deposit</span></li>
-            <li><b>Title transfer</b><span>Instalment</span></li>
             <li><b>Foundation</b><span>Instalment</span></li>
-            <li><b>Structure &amp; roof</b><span>Instalment</span></li>
+            <li><b>Structure &amp; roof</b><span>Multiple instalments</span></li>
             <li><b>Completion</b><span>Balance at handover, Q4 2028</span></li>
           </ol>
           <p class="fineprint">Prices and availability are subject to change.</p>
@@ -1679,7 +1722,7 @@
         </div>
       </section>
 
-      <section class="slide slide--close" data-show="city" data-project="Casabella City">
+      <section class="slide slide--close tone-paper" data-show="city" data-project="Casabella City">
         <div class="panel">
           <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
             <g fill="none" stroke="#cfa863" stroke-width="1.6" stroke-linecap="square">
