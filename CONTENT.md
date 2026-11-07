@@ -63,9 +63,9 @@ is **left off the page**, not shown as a placeholder. To add each one:
 - **Price list by unit.** The brochure table had only dummy rows. When real
   units, areas and prices exist, add a table to the `#pricing` section; until
   then the page shows "from $325,000" and asks people to request the list.
-- **Payment percentages.** Only the 10% deposit is known. Title transfer,
-  foundation, structure/roof and completion read "Instalment" / "Balance" in
-  the `.milestones` list.
+- **Payment percentages.** Only the 10% deposit is known. Foundation reads
+  "Instalment", structure/roof "Multiple instalments" and completion
+  "Balance" in the `.milestones` list. There is no title-transfer milestone.
 - **HOA per month** — not shown.
 - **Apartment size** — 72 m² per apartment, as confirmed by the owner.
   Outdoor (gallery) m² is still unknown.
