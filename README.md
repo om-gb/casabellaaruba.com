@@ -135,6 +135,12 @@ note. City's figures (52 two-bedroom apartments, two storeys) come from the
 architect's plans, BT-01: 26 apartments on each of two identical floors.
 Its photos live in `assets/img/city/`.
 
+**Temporary: City only.** `/tv/` currently shows a 10-slide Casabella City
+show built from `/city/` (price, completion, payment schedule, drive times).
+The four-project show is still in the same file: `/tv/?show=all` plays it,
+and setting `SHOW` to `"all"` in `tv/index.html` makes it the default again.
+Each slide carries `data-show="city"` or `data-show="all"`.
+
 Both TV pages open on a short loading screen that downloads and decodes every
 photo before the first one shows, so changing photos never stalls on a slow
 TV. It gives up waiting after 30 seconds, so one missing photo cannot hold
