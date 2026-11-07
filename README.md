@@ -99,7 +99,7 @@ the payment percentages, HOA — are left off rather than shown as zeros;
 
 `/tv/` is a self-running slideshow for the TV in the office: Tower and Suites
 photos with copy from their pages, plus a clock (Aruba time, with New York and
-Amsterdam underneath), live Aruba weather and sunset from
+India underneath), live Aruba weather and sunset from
 [Open-Meteo](https://open-meteo.com) (free, no key). One file, everything
 inline, `noindex` and disallowed in `robots.txt`.
 
@@ -134,6 +134,12 @@ once. City imagery is rendered, so those slides carry an "Artist impression"
 note. City's figures (52 two-bedroom apartments, two storeys) come from the
 architect's plans, BT-01: 26 apartments on each of two identical floors.
 Its photos live in `assets/img/city/`.
+
+**Temporary: City only.** `/tv/` currently shows a 10-slide Casabella City
+show built from `/city/` (price, completion, payment schedule, drive times).
+The four-project show is still in the same file: `/tv/?show=all` plays it,
+and setting `SHOW` to `"all"` in `tv/index.html` makes it the default again.
+Each slide carries `data-show="city"` or `data-show="all"`.
 
 Both TV pages open on a short loading screen that downloads and decodes every
 photo before the first one shows, so changing photos never stalls on a slow
